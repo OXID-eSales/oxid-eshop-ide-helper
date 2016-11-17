@@ -20,7 +20,7 @@
  * @version       OXID eShop CE
  */
 
-namespace OxidEsales\EshopCommunity\IdeHelper;
+namespace OxidEsales\EshopIdeHelper;
 
 use OxidEsales\Eshop\Core\Edition\EditionSelector;
 use ReflectionClass;
@@ -31,7 +31,7 @@ use ReflectionProperty;
 /**
  * Class Generator
  *
- * @package OxidEsales\EshopCommunity\IdeHelper
+ * @package OxidEsales\EshopIdeHelper
  */
 class Generator
 {
