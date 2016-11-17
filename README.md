@@ -24,6 +24,8 @@ To create or update the helper file, run the following command in the root direc
 vendor/bin/oe-eshop-ide_helper
 ```
 
+In case a different edition was configured earlier, the IDE helper file should be updated after edition upgrade. 
+
 Note for PhpStorm users
 -----------------------
 
