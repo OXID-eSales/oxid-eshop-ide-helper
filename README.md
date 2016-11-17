@@ -12,7 +12,7 @@ Installation
 To install this component, run the following command in the root directory of your OXID eSales eShop: 
 
 ```
-composer require-dev oxid-esales/eshop-ide-helper
+composer require --dev oxid-esales/eshop-ide-helper
 ```
 
 Usage
