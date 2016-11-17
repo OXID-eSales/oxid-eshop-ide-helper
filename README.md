@@ -24,8 +24,8 @@ To create or update the helper file, run the following command in the root direc
 vendor/bin/oe-eshop-ide_helper
 ```
 
-Note for PHPStorm users
+Note for PhpStorm users
 -----------------------
 
-There is an excellent third-party plug-in for PHPStorm, which complements the functionality of this IDE helper component.
+There is an excellent third-party plug-in for PhpStorm, which complements the functionality of this IDE helper component.
 See [https://github.com/Haehnchen/idea-php-oxid-plugin](https://github.com/Haehnchen/idea-php-oxid-plugin) for details and installation instructions.
