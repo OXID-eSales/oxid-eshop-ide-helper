@@ -24,5 +24,8 @@
 $projectRoot = dirname(dirname(dirname(dirname(__FILE__))));
 require_once $projectRoot . '/source/bootstrap.php';
 
+// TODO remove this line after auto loading via composer works
+require_once 'src/Generator.php';
+
 $generator = new OxidEsales\EshopIdeHelper\Generator($projectRoot);
 $generator->generate();
