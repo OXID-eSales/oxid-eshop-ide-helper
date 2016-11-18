@@ -43,6 +43,11 @@ class Generator
     private $projectRootDirectory = null;
 
 
+    /**
+     * Generator constructor.
+     *
+     * @param string $projectRootDirectory Project root directory
+     */
     public function __construct($projectRootDirectory)
     {
         $this->editionSelector = new EditionSelector();
@@ -51,7 +56,7 @@ class Generator
     }
 
     /**
-     * Generate a helper file for IDE aut-completion
+     * Generate a helper file for IDE auto-completion
      */
     public function generate()
     {
@@ -81,7 +86,7 @@ class Generator
         $virtualNameSpaceClassMapCommunity = $this->getMapCommunity();
         $classMapCommunity = $virtualNameSpaceClassMapCommunity->getOverridableMap();
 
-        return $this->generateIdeHelperClasses($classMapCommunity);
+        return $this->generateIdeHelperOutput($classMapCommunity);
     }
 
     /**
@@ -97,7 +102,7 @@ class Generator
         $classMapCommunity = $virtualNameSpaceClassMapCommunity->getOverridableMap();
         $classMapProfessional = array_merge($classMapCommunity, $virtualNameSpaceClassMapProfessional->getOverridableMap());
 
-        return $this->generateIdeHelperClasses($classMapProfessional);
+        return $this->generateIdeHelperOutput($classMapProfessional);
     }
 
     /**
@@ -115,7 +120,7 @@ class Generator
         $classMapProfessional = array_merge($classMapCommunity, $virtualNameSpaceClassMapProfessional->getOverridableMap());
         $classMapEnterprise = array_merge($classMapProfessional, $virtualNameSpaceClassMapEnterprise->getOverridableMap());
 
-        return $this->generateIdeHelperClasses($classMapEnterprise);
+        return $this->generateIdeHelperOutput($classMapEnterprise);
     }
 
 
@@ -126,7 +131,7 @@ class Generator
      *
      * @return mixed|string|void
      */
-    protected function generateIdeHelperClasses(array $classMap)
+    protected function generateIdeHelperOutput(array $classMap)
     {
         $virtualNamespaces = [];
 
@@ -144,13 +149,6 @@ class Generator
                     'isInterface'         => $reflectionObject->isInterface(),
                     'fullClassName'       => $reflectionObject->getName(),
                     'shortClassName'      => $reflectionObject->getShortName(),
-                    'constants'           => [], // $this->getConstantsReflectionObject($reflectionObject),
-                    'privateProperties'   => [], //  $this->getPrivatePropertiesReflectionObject($reflectionObject),
-                    'protectedProperties' => [], //  $this->getProtectedPropertiesReflectionObject($reflectionObject),
-                    'publicProperties'    => [], //  $this->getPublicPropertiesReflectionObject($reflectionObject),
-                    'privateMethods'      => [], //  $this->getPrivateMethodsReflectionObject($reflectionObject),
-                    'protectedMethods'    => [], //  $this->getProtectedMethodsReflectionObject($reflectionObject),
-                    'publicMethods'       => [], //  $this->getPublicMethodsReflectionObject($reflectionObject),
                 ];
             }
         }
@@ -183,7 +181,7 @@ class Generator
     }
 
     /**
-     * Return the VirtualNameSpaceClassMap of the OXID eSales eShop Community Edition
+     * Return the VirtualNameSpaceClassMap of OXID eSales eShop Community Edition
      *
      * @return null|\OxidEsales\EshopCommunity\Core\Edition\ClassMap
      */
@@ -199,7 +197,7 @@ class Generator
     }
 
     /**
-     * Return the VirtualNameSpaceClassMap of the OXID eSales eShop Professional Edition
+     * Return the VirtualNameSpaceClassMap of OXID eSales eShop Professional Edition
      *
      * @return null|\OxidEsales\EshopCommunity\Core\Edition\ClassMap
      */
@@ -215,7 +213,7 @@ class Generator
     }
 
     /**
-     * Return the VirtualNameSpaceClassMap of the OXID eSales eShop Enterprise Edition
+     * Return the VirtualNameSpaceClassMap of OXID eSales eShop Enterprise Edition
      *
      * @return null|\OxidEsales\EshopCommunity\Core\Edition\ClassMap
      */
@@ -262,227 +260,9 @@ class Generator
         $currentDirectory = dirname(__FILE__);
         $smarty->template_dir = realpath($currentDirectory . '/smarty/templates/');
         $smarty->compile_dir = realpath($currentDirectory . '/smarty/templates_c/');
-        $smarty->config_dir = realpath($currentDirectory . '/smarty/configs/');
-        $smarty->cache_dir = realpath($currentDirectory . '/smarty/cache/');
         $smarty->left_delimiter = '{{';
         $smarty->right_delimiter = '}}';
-        $smarty->debugging = true;
 
         return $smarty;
-    }
-
-    /**
-     * Not used ATM
-     *
-     * @param ReflectionClass $reflectionObject
-     *
-     * @return array
-     */
-    protected function getConstantsReflectionObject(ReflectionClass $reflectionObject)
-    {
-        $constants = [];
-        foreach ($reflectionObject->getConstants() as $name => $value) {
-            $constants[] = [
-                'name'     => $name,
-                'docBlock' => '',
-                'value'    => $value,
-            ];
-        }
-
-        return $constants;
-    }
-
-    /**
-     * Not used ATM
-     *
-     * @param ReflectionClass $reflectionObject
-     *
-     * @return array
-     */
-    protected function getPrivatePropertiesReflectionObject(ReflectionClass $reflectionObject)
-    {
-        $filter = ReflectionProperty::IS_PRIVATE;
-
-        return $this->getProperties($reflectionObject, $filter);
-    }
-
-    /**
-     * Not used ATM
-     *
-     * @param ReflectionClass $reflectionObject
-     *
-     * @return array
-     */
-    protected function getProtectedPropertiesReflectionObject(ReflectionClass $reflectionObject)
-    {
-        $filter = ReflectionProperty::IS_PROTECTED;
-
-        return $this->getProperties($reflectionObject, $filter);
-    }
-
-    /**
-     * Not used ATM
-     *
-     * @param ReflectionClass $reflectionObject
-     *
-     * @return array
-     */
-    protected function getPublicPropertiesReflectionObject(ReflectionClass $reflectionObject)
-    {
-        $filter = ReflectionProperty::IS_PUBLIC;
-
-        return $this->getProperties($reflectionObject, $filter);
-    }
-
-    /**
-     * Not used ATM
-     *
-     * @param ReflectionClass $reflectionObject
-     *
-     * @return array
-     */
-    protected function getPrivateMethodsReflectionObject(ReflectionClass $reflectionObject)
-    {
-        $filter = \ReflectionMethod::IS_PRIVATE;
-
-        $methods = $this->getMethods($reflectionObject, $filter);
-
-        return $methods;
-    }
-
-    /**
-     * Not used ATM
-     *
-     * @param ReflectionClass $reflectionObject
-     *
-     * @return array
-     */
-    protected function getProtectedMethodsReflectionObject(ReflectionClass $reflectionObject)
-    {
-        $filter = \ReflectionMethod::IS_PROTECTED;
-
-        $methods = $this->getMethods($reflectionObject, $filter);
-
-        return $methods;
-    }
-
-    /**
-     * Not used ATM
-     *
-     * @param ReflectionClass $reflectionObject
-     *
-     * @return array
-     */
-    protected function getPublicMethodsReflectionObject(ReflectionClass $reflectionObject)
-    {
-        $filter = \ReflectionMethod::IS_PUBLIC;
-
-        $methods = $this->getMethods($reflectionObject, $filter);
-
-        return $methods;
-    }
-
-    /**
-     * Not used ATM
-     *
-     * @param ReflectionParameter $parameter
-     *
-     * @return string|null
-     */
-    protected function getParameterType(ReflectionParameter $parameter)
-    {
-        $export = ReflectionParameter::export(
-            array(
-                $parameter->getDeclaringClass()->name,
-                $parameter->getDeclaringFunction()->name
-            ),
-            $parameter->name,
-            true
-        );
-
-        $type = preg_match('/[>] ([A-z]+) /', $export, $matches)
-            ? $matches[1] : null;
-
-        if (false !== strpos($type, '\\')) {
-            $type = '\\' . ltrim($type, '\\');
-        }
-
-        return $type;
-    }
-
-    /**
-     * Not used ATM
-     *
-     * @param ReflectionClass $reflectionObject
-     * @param                 $filter
-     *
-     * @return array
-     */
-    protected function getProperties(ReflectionClass $reflectionObject, $filter)
-    {
-        $defaultProperties = $reflectionObject->getDefaultProperties();
-        $staticProperties = $reflectionObject->getStaticProperties();
-        $properties = [];
-        foreach ($reflectionObject->getProperties($filter) as $reflectionProperty) {
-            $declaringClass = $reflectionProperty->getDeclaringClass();
-            if ($declaringClass->getShortName() == $reflectionObject->getShortName()) {
-                $propertyValue = var_export($defaultProperties[$reflectionProperty->getName()], true);
-                if ($reflectionProperty->isStatic()) {
-                    $propertyName = $reflectionProperty->getName();
-                    // TODO this is not working as documented and throws an exception ATM
-                    // $propertyValue = var_export($reflectionObject->getStaticPropertyValue($propertyName), true);
-                }
-                $properties[] = [
-                    'name'     => $reflectionProperty->getName(),
-                    'isStatic' => $reflectionProperty->isStatic(),
-                    'docBlock' => $reflectionProperty->getDocComment(),
-                    'value'    => $propertyValue
-                ];
-            }
-        }
-
-        return $properties;
-    }
-
-    /**
-     * Not used ATM
-     *
-     * @param ReflectionClass $reflectionObject
-     * @param                 $filter
-     *
-     * @return array
-     */
-    protected function getMethods(ReflectionClass $reflectionObject, $filter)
-    {
-        $methods = [];
-        foreach ($reflectionObject->getMethods($filter) as $method) {
-            $declaringClass = $method->getDeclaringClass();
-            if ($declaringClass->getShortName() == $reflectionObject->getShortName()) {
-                $reflectionParameters = $method->getParameters();
-                $parameters = [];
-                foreach ($reflectionParameters as $reflectionParameter) {
-                    $parameters[$reflectionParameter->getPosition()] = [
-                        'type'            => $this->getParameterType($reflectionParameter) ? $this->getParameterType($reflectionParameter) : '',
-                        'name'            => $reflectionParameter->getName(),
-                        'hasDefaultValue' => $reflectionParameter->isDefaultValueAvailable(),
-                        'defaultValue'    => $reflectionParameter->isDefaultValueAvailable() ? var_export($reflectionParameter->getDefaultValue(), true) : '',
-                        'byReference'     => $reflectionParameter->isPassedByReference()
-                    ];
-                }
-                ksort($parameters);
-
-
-                $methods[] = [
-                    'name'       => $method->getName(),
-                    'isStatic'   => $method->isStatic(),
-                    'isAbstract' => $method->isAbstract() && !$reflectionObject->isInterface(),
-                    'docBlock'   => $method->getDocComment(),
-                    'parameters' => $parameters,
-                ];
-            }
-        }
-        sort($methods);
-
-        return $methods;
     }
 }
