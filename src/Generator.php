@@ -1,23 +1,22 @@
 <?php
 /**
- * This file is part of OXID eShop Community Edition.
+ * This file is part of OXID eSales IDE code completion helper script.
  *
- * OXID eShop Community Edition is free software: you can redistribute it and/or modify
+ * OXID eSales IDE code completion helper script is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * OXID eShop Community Edition is distributed in the hope that it will be useful,
+ * OXID eSales IDE code completion helper script is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OXID eShop Community Edition.  If not, see <http://www.gnu.org/licenses/>.
+ * along with OXID eSales PayPal module.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @link          http://www.oxid-esales.com
+ * @link      http://www.oxid-esales.com
  * @copyright (C) OXID eSales AG 2003-2016
- * @version       OXID eShop CE
  */
 
 namespace OxidEsales\EshopIdeHelper;
@@ -42,7 +41,6 @@ class Generator
     /** @var null|string The path to the project root directory */
     private $projectRootDirectory = null;
 
-
     /**
      * Generator constructor.
      *
@@ -62,6 +60,7 @@ class Generator
     {
         $output = '';
         $edition = $this->getEdition();
+
         if ($edition == \OxidEsales\Eshop\Core\Edition\EditionSelector::COMMUNITY) {
             $output = $this->generateCommunity();
         }
@@ -232,6 +231,8 @@ class Generator
      * Get the virtual namespaces and the associated ReflectionClasses of the mapped classes
      *
      * @param array $classMap Mapping of classes in a virtual namespace real existing classes
+     *
+     * @return array The namespaces and their associated ReflectionClasses.
      */
     protected function getNameSpaces($classMap)
     {
