@@ -29,7 +29,7 @@ To create or update the helper file, run the following command in the root
 directory of your OXID eShop project:  
 
 ```
-vendor/bin/oxid-eshop-ide-helper
+vendor/bin/oe-eshop-ide_helper
 ```
 
 If you upgrade an existing OXID eShop edition (>= 6.x), the IDE helper file 
