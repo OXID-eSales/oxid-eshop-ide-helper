@@ -1,5 +1,5 @@
 {
-  "name": "oxid-esales/oxid-eshop-ide-helper",
+  "name": "oxid-esales/oxideshop-ide-helper",
   "description": "OXID eShop IDE helper for code completion",
   "license": "GPL-3.0",
   "bin": ["./oe-eshop-ide_helper"]
