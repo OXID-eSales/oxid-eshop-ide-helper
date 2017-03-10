@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OXID eSales IDE code completion helper script. If not, see <http://www.gnu.org/licenses/>.
  *
- * @link      http://www.oxid-esales.com
+ * @link          http://www.oxid-esales.com
  * @copyright (C) OXID eSales AG 2003-2016
  */
 
@@ -24,8 +24,6 @@ namespace OxidEsales\EshopIdeHelper;
 use OxidEsales\Eshop\Core\Edition\EditionSelector;
 use ReflectionClass;
 use ReflectionException;
-use ReflectionParameter;
-use ReflectionProperty;
 
 /**
  * Class Generator
@@ -34,7 +32,6 @@ use ReflectionProperty;
  */
 class Generator
 {
-
     /** @var null|EditionSelector An instance of the edition selector */
     private $editionSelector = null;
 
@@ -62,73 +59,27 @@ class Generator
         $edition = $this->getEdition();
 
         if ($edition == \OxidEsales\Eshop\Core\Edition\EditionSelector::COMMUNITY) {
-            $output = $this->generateCommunity();
+            $classMap = $this->getMapCommunity();
+            $output = $this->generateIdeHelperOutput($classMap);
         }
         if ($edition == \OxidEsales\Eshop\Core\Edition\EditionSelector::PROFESSIONAL) {
-            $output = $this->generateProfessional();
+            $classMap = $this->getMapProfessional();
+            $output = $this->generateIdeHelperOutput($classMap);
         }
         if ($edition == \OxidEsales\Eshop\Core\Edition\EditionSelector::ENTERPRISE) {
-            $output = $this->generateEnterprise();
+            $classMap = $this->getMapEnterprise();
+            $output = $this->generateIdeHelperOutput($classMap);
         }
 
         file_put_contents($this->projectRootDirectory . '/.ide-helper.php', $output);
     }
 
     /**
-     * Generate the output for the OXID eSales eShop Community Edition
-     *
-     * @return mixed|string|void
-     */
-    protected function generateCommunity()
-    {
-
-        $virtualNameSpaceClassMapCommunity = $this->getMapCommunity();
-        $classMapCommunity = $virtualNameSpaceClassMapCommunity->getOverridableMap();
-
-        return $this->generateIdeHelperOutput($classMapCommunity);
-    }
-
-    /**
-     * Generate the output for the OXID eSales eShop Professional Edition
-     *
-     * @return mixed|string|void
-     */
-    protected function generateProfessional()
-    {
-        $virtualNameSpaceClassMapCommunity = $this->getMapCommunity();
-        $virtualNameSpaceClassMapProfessional = $this->getMapProfessional();
-
-        $classMapCommunity = $virtualNameSpaceClassMapCommunity->getOverridableMap();
-        $classMapProfessional = array_merge($classMapCommunity, $virtualNameSpaceClassMapProfessional->getOverridableMap());
-
-        return $this->generateIdeHelperOutput($classMapProfessional);
-    }
-
-    /**
-     * Generate the output for the OXID eSales eShop Enterprise Edition
-     *
-     * @return mixed|string|void
-     */
-    protected function generateEnterprise()
-    {
-        $virtualNameSpaceClassMapCommunity = $this->getMapCommunity();
-        $virtualNameSpaceClassMapProfessional = $this->getMapProfessional();
-        $virtualNameSpaceClassMapEnterprise = $this->getMapEnterprise();
-
-        $classMapCommunity = $virtualNameSpaceClassMapCommunity->getOverridableMap();
-        $classMapProfessional = array_merge($classMapCommunity, $virtualNameSpaceClassMapProfessional->getOverridableMap());
-        $classMapEnterprise = array_merge($classMapProfessional, $virtualNameSpaceClassMapEnterprise->getOverridableMap());
-
-        return $this->generateIdeHelperOutput($classMapEnterprise);
-    }
-
-
-    /**
      * Generate the helper classes for a given class map
      *
      * @param array $classMap
      *
-     * @return mixed|string|void
+     * @return mixed|string
      */
     protected function generateIdeHelperOutput(array $classMap)
     {
@@ -141,19 +92,39 @@ class Generator
                 ['', '', ''],
                 $nameSpace
             );
+            /** @var \ReflectionObject $reflectionObject */
             foreach ($reflectionObjects as $reflectionObject) {
                 $virtualNamespaces[$virtualNamespace][] = [
                     // Interfaces are abstract for Reflection too, here we want just abstract classes
-                    'isAbstract'          => $reflectionObject->isAbstract() && !$reflectionObject->isInterface(),
-                    'isInterface'         => $reflectionObject->isInterface(),
-                    'fullClassName'       => $reflectionObject->getName(),
-                    'shortClassName'      => $reflectionObject->getShortName(),
+                    'isAbstract'     => $reflectionObject->isAbstract() && !$reflectionObject->isInterface(),
+                    'isInterface'    => $reflectionObject->isInterface(),
+                    'childClassName'  => $reflectionObject->getShortName(),
+                    'parentClassName' => $reflectionObject->getName(),
                 ];
             }
         }
 
+        $backwardsCompatibleClasses = [];
+        $backwardsCompatibilityMap = $this->getBackwardsCompatibilityMap();
+        $backwardsCompatibleReflectionObjects = $this->getBackwardsCompatibleReflectionObjects($backwardsCompatibilityMap);
+        foreach ($backwardsCompatibleReflectionObjects as $backwardsCompatibleClassName => $reflectionObject) {
+            $virtualClassName = str_replace(
+                ['Community', 'Professional', 'Enterprise'],
+                ['', '', ''],
+                $reflectionObject->getName()
+            );
+            $backwardsCompatibleClasses[] = [
+                // Interfaces are abstract for Reflection too, here we want just abstract classes
+                'isAbstract'     => $reflectionObject->isAbstract() && !$reflectionObject->isInterface(),
+                'isInterface'    => $reflectionObject->isInterface(),
+                'childClassName'  => $backwardsCompatibleClassName,
+                'parentClassName' => $virtualClassName,
+            ];
+        }
+
         $smarty = $this->getSmarty();
         $smarty->assign('nameSpaces', $virtualNamespaces);
+        $smarty->assign('backwardsCompatibleClasses', $backwardsCompatibleClasses);
         $output = $smarty->fetch('main-template.tpl');
 
         return $output;
@@ -182,14 +153,15 @@ class Generator
     /**
      * Return the VirtualNameSpaceClassMap of OXID eSales eShop Community Edition
      *
-     * @return null|\OxidEsales\EshopCommunity\Core\Edition\ClassMap
+     * @return array
      */
     protected function getMapCommunity()
     {
-        $classMap = null;
+        $classMap = [];
 
-        if (class_exists(\OxidEsales\EshopCommunity\Core\VirtualNameSpaceClassMap::class)) {
-            $classMap = new \OxidEsales\EshopCommunity\Core\VirtualNameSpaceClassMap();
+        if (class_exists(\OxidEsales\EshopCommunity\Core\Autoload\VirtualNameSpaceClassMap::class)) {
+            $virtualNameSpaceClassMap = new \OxidEsales\EshopCommunity\Core\Autoload\VirtualNameSpaceClassMap();
+            $classMap = $virtualNameSpaceClassMap->getClassMap();
         }
 
         return $classMap;
@@ -198,14 +170,15 @@ class Generator
     /**
      * Return the VirtualNameSpaceClassMap of OXID eSales eShop Professional Edition
      *
-     * @return null|\OxidEsales\EshopCommunity\Core\Edition\ClassMap
+     * @return array
      */
     protected function getMapProfessional()
     {
-        $classMap = null;
+        $classMap = [];
 
-        if (class_exists(\OxidEsales\EshopProfessional\Core\VirtualNameSpaceClassMap::class)) {
-            $classMap = new \OxidEsales\EshopProfessional\Core\VirtualNameSpaceClassMap();
+        if (class_exists(\OxidEsales\EshopProfessional\Core\Autoload\VirtualNameSpaceClassMap::class)) {
+            $virtualNameSpaceClassMap = new \OxidEsales\EshopProfessional\Core\Autoload\VirtualNameSpaceClassMap();
+            $classMap = $virtualNameSpaceClassMap->getClassMap();
         }
 
         return $classMap;
@@ -214,14 +187,15 @@ class Generator
     /**
      * Return the VirtualNameSpaceClassMap of OXID eSales eShop Enterprise Edition
      *
-     * @return null|\OxidEsales\EshopCommunity\Core\Edition\ClassMap
+     * @return array
      */
     protected function getMapEnterprise()
     {
-        $classMap = null;
+        $classMap = [];
 
-        if (class_exists(\OxidEsales\EshopEnterprise\Core\VirtualNameSpaceClassMap::class)) {
-            $classMap = new \OxidEsales\EshopEnterprise\Core\VirtualNameSpaceClassMap();
+        if (class_exists(\OxidEsales\EshopEnterprise\Core\Autoload\VirtualNameSpaceClassMap::class)) {
+            $virtualNameSpaceClassMap = new \OxidEsales\EshopEnterprise\Core\Autoload\VirtualNameSpaceClassMap();
+            $classMap = $virtualNameSpaceClassMap->getClassMap();
         }
 
         return $classMap;
@@ -251,6 +225,45 @@ class Generator
 
 
     /**
+     * Get the backwards compatible classes and the associated ReflectionClasses of the mapped classes
+     *
+     * @param array $classMap Mapping of backwards compatible class names to virtual class names
+     *
+     * @return array The backwards compatible classes their associated ReflectionClasses.
+     */
+    protected function getBackwardsCompatibleReflectionObjects($classMap)
+    {
+        $backwardsCompatibleClasses = [];
+        foreach ($classMap as $backwardsCompatibleClassName => $virtualClassName) {
+            try {
+                $reflectionObject = new ReflectionClass($backwardsCompatibleClassName);
+                $backwardsCompatibleClasses[$backwardsCompatibleClassName] = $reflectionObject;
+            } catch (ReflectionException $exception) {
+                $this->handleException($exception);
+            }
+        }
+
+        return $backwardsCompatibleClasses;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBackwardsCompatibilityMap()
+    {
+        $backwardsCompatibilityMap = array_flip(
+            include $this->projectRootDirectory . DIRECTORY_SEPARATOR .
+                    'source' . DIRECTORY_SEPARATOR .
+                    'Core' . DIRECTORY_SEPARATOR .
+                    'Autoload' . DIRECTORY_SEPARATOR .
+                    'BackwardsCompatibilityClassMap.php'
+        );
+
+        return $backwardsCompatibilityMap;
+    }
+
+
+    /**
      * Return an instance of smarty
      *
      * @return \Smarty
@@ -259,8 +272,16 @@ class Generator
     {
         $smarty = new \Smarty();
         $currentDirectory = dirname(__FILE__);
-        $smarty->template_dir = realpath($currentDirectory . '/smarty/templates/');
-        $smarty->compile_dir = realpath($currentDirectory . '/smarty/templates_c/');
+        $smarty->template_dir = realpath(
+            $currentDirectory . DIRECTORY_SEPARATOR .
+            'smarty' . DIRECTORY_SEPARATOR .
+            'templates' . DIRECTORY_SEPARATOR
+        );
+        $smarty->compile_dir = realpath(
+            $currentDirectory . '' . DIRECTORY_SEPARATOR .
+            'smarty' . DIRECTORY_SEPARATOR .
+            'templates_c' . DIRECTORY_SEPARATOR
+        );
         $smarty->left_delimiter = '{{';
         $smarty->right_delimiter = '}}';
 

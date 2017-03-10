@@ -4,7 +4,12 @@
  */
 
 namespace {
-  exit("This file should not be included, only analyzed by your IDE");
+{{foreach from=$backwardsCompatibleClasses item=class}}
+
+    {{include file="class-template.tpl" class=$class }}
+{{/foreach}}
+
+    exit("This file should not be included, only analyzed by your IDE");
 }
 
 namespace PHPSTORM_OXID_META {
@@ -18,7 +23,7 @@ namespace PHPSTORM_OXID_META {
 {{foreach from=$nameSpaces key=namespace item=classes}}
     {{foreach from=$classes item=class}}
 
-            '{{$namespace}}\{{$class.shortClassName}}' => \{{$class.fullClassName}}::class,
+            '{{$namespace}}\{{$class.childClassName}}' => \{{$class.parentClassName}}::class,
     {{/foreach}}
 {{/foreach}}
         ],
