@@ -32,6 +32,87 @@ use ReflectionException;
  */
 class Generator
 {
+
+    /**
+     * There are some expected missing classes in OXID eSales Community Edition.
+     *
+     * @var array
+     */
+    private $bcExpectedMissingClasses = ['oxelement2shoprelationsservice',
+                                         'admin_beroles',
+                                         'admin_feroles',
+                                         'adminlinks_mall',
+                                         'admin_mall',
+                                         'article_mall',
+                                         'article_rights',
+                                         'article_rights_buyable_ajax',
+                                         'article_rights_visible_ajax',
+                                         'attribute_mall',
+                                         'category_mall',
+                                         'category_rights',
+                                         'category_rights_buyable_ajax',
+                                         'category_rights_visible_ajax',
+                                         'delivery_mall',
+                                         'deliveryset_mall',
+                                         'discount_mall',
+                                         'manufacturer_mall',
+                                         'news_mall',
+                                         'roles_begroups_ajax',
+                                         'roles_belist',
+                                         'roles_bemain',
+                                         'roles_beobject',
+                                         'roles_beuser',
+                                         'roles_beuser_ajax',
+                                         'roles_fegroups_ajax',
+                                         'roles_felist',
+                                         'roles_femain',
+                                         'roles_feuser',
+                                         'selectlist_mall',
+                                         'shop_cache',
+                                         'shop_mall',
+                                         'vendor_mall',
+                                         'voucherserie_mall',
+                                         'wrapping_mall',
+                                         'mallstart',
+                                         'oxicachebackend',
+                                         'oxfield2shop',
+                                         'oxrights',
+                                         'oxrole',
+                                         'oxshoprelations',
+                                         'oxadminrights',
+                                         'oxarticle2shoprelations',
+                                         'oxcachebackenddefault',
+                                         'oxfield2shop',
+                                         'oxrights',
+                                         'oxrole',
+                                         'oxshoprelations',
+                                         'oxadminrights',
+                                         'oxarticle2shoprelations',
+                                         'oxcachebackenddefault',
+                                         'oxcachebackendzsdisk',
+                                         'oxcachebackendzsshm',
+                                         'oxcache',
+                                         'oxcachebackend',
+                                         'oxcacheitem',
+                                         'oxfilecacheconnector',
+                                         'oxmemcachedcacheconnector',
+                                         'oxreverseproxyconnector',
+                                         'oxzenddiskcacheconnector',
+                                         'oxzendshmcacheconnector',
+                                         'oxreverseproxybackend',
+                                         'oxreverseproxyheader',
+                                         'oxreverseproxyurlgenerator',
+                                         'oxreverseproxyurlpartstoflush',
+                                         'oxcategory2shoprelations',
+                                         'oxelement2shoprelations',
+                                         'oxelement2shoprelationsdbgateway',
+                                         'oxelement2shoprelationssqlgenerator',
+                                         'oxaccessrightexception',
+                                         'oxexpirationemailbuilder',
+                                         'oxldap',
+                                         'oxserial',];
+
+
     /** @var null|EditionSelector An instance of the edition selector */
     private $editionSelector = null;
 
@@ -96,8 +177,8 @@ class Generator
             foreach ($reflectionObjects as $reflectionObject) {
                 $virtualNamespaces[$virtualNamespace][] = [
                     // Interfaces are abstract for Reflection too, here we want just abstract classes
-                    'isAbstract'     => $reflectionObject->isAbstract() && !$reflectionObject->isInterface(),
-                    'isInterface'    => $reflectionObject->isInterface(),
+                    'isAbstract'      => $reflectionObject->isAbstract() && !$reflectionObject->isInterface(),
+                    'isInterface'     => $reflectionObject->isInterface(),
                     'childClassName'  => $reflectionObject->getShortName(),
                     'parentClassName' => $reflectionObject->getName(),
                 ];
@@ -115,8 +196,8 @@ class Generator
             );
             $backwardsCompatibleClasses[] = [
                 // Interfaces are abstract for Reflection too, here we want just abstract classes
-                'isAbstract'     => $reflectionObject->isAbstract() && !$reflectionObject->isInterface(),
-                'isInterface'    => $reflectionObject->isInterface(),
+                'isAbstract'      => $reflectionObject->isAbstract() && !$reflectionObject->isInterface(),
+                'isInterface'     => $reflectionObject->isInterface(),
                 'childClassName'  => $backwardsCompatibleClassName,
                 'parentClassName' => $virtualClassName,
             ];
@@ -137,6 +218,21 @@ class Generator
      */
     protected function handleException(\Exception $exception)
     {
+        echo 'Warning ' . $exception->getMessage() . PHP_EOL;
+    }
+
+    /**
+     * Handle a given exception
+     *
+     * @param \Exception $exception
+     */
+    protected function handleBackwardsCompatibleClassException(\Exception $exception)
+    {
+        /** There are some expected missing classes in OXID eSales Community Edition */
+        preg_match('/Class (.*?) does not exist/i', $exception->getMessage(), $matches);
+        if (isset($matches[1]) && in_array($matches[1], $this->bcExpectedMissingClasses)) {
+            return;
+        }
         echo 'Warning ' . $exception->getMessage() . PHP_EOL;
     }
 
@@ -239,7 +335,7 @@ class Generator
                 $reflectionObject = new ReflectionClass($backwardsCompatibleClassName);
                 $backwardsCompatibleClasses[$backwardsCompatibleClassName] = $reflectionObject;
             } catch (ReflectionException $exception) {
-                $this->handleException($exception);
+                $this->handleBackwardsCompatibleClassException($exception);
             }
         }
 
