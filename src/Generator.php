@@ -348,10 +348,7 @@ class Generator
     public function getBackwardsCompatibilityMap()
     {
         $backwardsCompatibilityMap = array_flip(
-            include $this->projectRootDirectory . DIRECTORY_SEPARATOR .
-                    'source' . DIRECTORY_SEPARATOR .
-                    'Core' . DIRECTORY_SEPARATOR .
-                    'Autoload' . DIRECTORY_SEPARATOR .
+            include CORE_AUTOLOADER_PATH .
                     'BackwardsCompatibilityClassMap.php'
         );
 
