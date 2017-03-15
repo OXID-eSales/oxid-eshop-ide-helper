@@ -23,8 +23,17 @@
 $projectRoot = dirname(dirname(dirname(dirname(__FILE__))));
 require_once $projectRoot . '/source/bootstrap.php';
 
+/** moduleAutoload must be unregistered, as it would trigger a database connection, which may be not yet available */
+$moduleAutoload = \OxidEsales\EshopCommunity\Core\Autoload\ModuleAutoload::class ;
+spl_autoload_unregister([$moduleAutoload, 'autoload']);
+
 // TODO remove this line after auto loading via composer works
 require_once 'src/Generator.php';
 
 $generator = new OxidEsales\EshopIdeHelper\Generator($projectRoot);
-$generator->generate();
+try {
+    $generator->generate();
+} catch (\Exception $exception) {
+    print $exception->getTraceAsString();
+}
+
