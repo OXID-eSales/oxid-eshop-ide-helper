@@ -21,6 +21,12 @@
  */
 
 $projectRoot = dirname(dirname(dirname(dirname(__FILE__))));
+
+if (!is_file($projectRoot . '/source/config.inc.php')) {
+    echo sprintf("\e[48;5;229m\e[38;5;0m%s\e[0m\n", "Shop config file should exist to use ide-helper");
+    die();
+}
+
 require_once $projectRoot . '/source/bootstrap.php';
 
 /** moduleAutoload must be unregistered, as it would trigger a database connection, which may be not yet available */
