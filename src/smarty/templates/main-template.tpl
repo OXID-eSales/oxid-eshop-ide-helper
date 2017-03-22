@@ -30,13 +30,13 @@ namespace PHPSTORM_OXID_META {
     ];
 }
 
-{{foreach from=$nameSpaces key=namespace item=classes}}
-
-namespace {{$namespace}}
+namespace 
 {
+{{foreach from=$nameSpaces key=namespace item=classes}}
 {{foreach from=$classes item=class}}
+
     {{include file="class-template.tpl" class=$class }}
 {{/foreach}}
-}
 {{/foreach}}
+}
 
