@@ -1,1 +1,1 @@
-class_alias('{$class.parentClassName}','{$class.childClassName}');
+class_alias('{{$class.parentClassName}}','{{$class.childClassName}}');
