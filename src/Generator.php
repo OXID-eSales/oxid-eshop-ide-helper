@@ -179,7 +179,7 @@ class Generator
                     // Interfaces are abstract for Reflection too, here we want just abstract classes
                     'isAbstract'      => $reflectionObject->isAbstract() && !$reflectionObject->isInterface(),
                     'isInterface'     => $reflectionObject->isInterface(),
-                    'childClassName'  => $reflectionObject->getShortName(),
+                    'childClassName'  => $virtualNamespace .'\\'. $reflectionObject->getShortName(),
                     'parentClassName' => $reflectionObject->getName(),
                 ];
             }
