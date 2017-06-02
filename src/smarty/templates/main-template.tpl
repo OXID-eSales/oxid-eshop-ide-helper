@@ -20,23 +20,10 @@ namespace PHPSTORM_OXID_META {
     $STATIC_METHOD_TYPES = [
         // we make sections for scopes
         \oxNew('') => [
-{{foreach from=$nameSpaces key=namespace item=classes}}
-    {{foreach from=$classes item=class}}
+{{foreach from=$backwardsCompatibleClasses item=class}}
 
-            '{{$namespace}}\{{$class.childClassName}}' => \{{$class.parentClassName}}::class,
-    {{/foreach}}
+        '\{{$class.childClassName}}' => \{{$class.parentClassName}}::class,
 {{/foreach}}
         ],
     ];
 }
-
-{{foreach from=$nameSpaces key=namespace item=classes}}
-
-namespace {{$namespace}}
-{
-{{foreach from=$classes item=class}}
-    {{include file="class-template.tpl" class=$class }}
-{{/foreach}}
-}
-{{/foreach}}
-

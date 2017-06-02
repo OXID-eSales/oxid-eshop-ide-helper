@@ -21,7 +21,6 @@
 
 namespace OxidEsales\EshopIdeHelper;
 
-use OxidEsales\Eshop\Core\Edition\EditionSelector;
 use ReflectionClass;
 use ReflectionException;
 
@@ -112,10 +111,6 @@ class Generator
                                          'oxldap',
                                          'oxserial',];
 
-
-    /** @var null|EditionSelector An instance of the edition selector */
-    private $editionSelector = null;
-
     /** @var null|string The path to the project root directory */
     private $projectRootDirectory = null;
 
@@ -126,8 +121,6 @@ class Generator
      */
     public function __construct($projectRootDirectory)
     {
-        $this->editionSelector = new EditionSelector();
-
         $this->projectRootDirectory = $projectRootDirectory;
     }
 
@@ -137,20 +130,7 @@ class Generator
     public function generate()
     {
         $output = '';
-        $edition = $this->getEdition();
-
-        if ($edition == \OxidEsales\Eshop\Core\Edition\EditionSelector::COMMUNITY) {
-            $classMap = $this->getMapCommunity();
-            $output = $this->generateIdeHelperOutput($classMap);
-        }
-        if ($edition == \OxidEsales\Eshop\Core\Edition\EditionSelector::PROFESSIONAL) {
-            $classMap = $this->getMapProfessional();
-            $output = $this->generateIdeHelperOutput($classMap);
-        }
-        if ($edition == \OxidEsales\Eshop\Core\Edition\EditionSelector::ENTERPRISE) {
-            $classMap = $this->getMapEnterprise();
-            $output = $this->generateIdeHelperOutput($classMap);
-        }
+        $output = $this->generateIdeHelperOutput();
 
         file_put_contents($this->projectRootDirectory . '/.ide-helper.php', $output);
     }
@@ -162,29 +142,8 @@ class Generator
      *
      * @return mixed|string
      */
-    protected function generateIdeHelperOutput(array $classMap)
+    protected function generateIdeHelperOutput()
     {
-        $virtualNamespaces = [];
-
-        $nameSpaces = $this->getNameSpaces($classMap);
-        foreach ($nameSpaces as $nameSpace => $reflectionObjects) {
-            $virtualNamespace = str_replace(
-                ['Community', 'Professional', 'Enterprise'],
-                ['', '', ''],
-                $nameSpace
-            );
-            /** @var \ReflectionObject $reflectionObject */
-            foreach ($reflectionObjects as $reflectionObject) {
-                $virtualNamespaces[$virtualNamespace][] = [
-                    // Interfaces are abstract for Reflection too, here we want just abstract classes
-                    'isAbstract'      => $reflectionObject->isAbstract() && !$reflectionObject->isInterface(),
-                    'isInterface'     => $reflectionObject->isInterface(),
-                    'childClassName'  => $reflectionObject->getShortName(),
-                    'parentClassName' => $reflectionObject->getName(),
-                ];
-            }
-        }
-
         $backwardsCompatibleClasses = [];
         $backwardsCompatibilityMap = $this->getBackwardsCompatibilityMap();
         $backwardsCompatibleReflectionObjects = $this->getBackwardsCompatibleReflectionObjects($backwardsCompatibilityMap);
@@ -204,7 +163,6 @@ class Generator
         }
 
         $smarty = $this->getSmarty();
-        $smarty->assign('nameSpaces', $virtualNamespaces);
         $smarty->assign('backwardsCompatibleClasses', $backwardsCompatibleClasses);
         $output = $smarty->fetch('main-template.tpl');
 
@@ -235,90 +193,6 @@ class Generator
         }
         echo 'Warning ' . $exception->getMessage() . PHP_EOL;
     }
-
-    /**
-     * Return the currently installed edition of OXID eSales eShop
-     *
-     * @return string
-     */
-    protected function getEdition()
-    {
-        return $this->editionSelector->getEdition();
-    }
-
-    /**
-     * Return the VirtualNameSpaceClassMap of OXID eSales eShop Community Edition
-     *
-     * @return array
-     */
-    protected function getMapCommunity()
-    {
-        $classMap = [];
-
-        if (class_exists(\OxidEsales\EshopCommunity\Core\Autoload\VirtualNameSpaceClassMap::class)) {
-            $virtualNameSpaceClassMap = new \OxidEsales\EshopCommunity\Core\Autoload\VirtualNameSpaceClassMap();
-            $classMap = $virtualNameSpaceClassMap->getClassMap();
-        }
-
-        return $classMap;
-    }
-
-    /**
-     * Return the VirtualNameSpaceClassMap of OXID eSales eShop Professional Edition
-     *
-     * @return array
-     */
-    protected function getMapProfessional()
-    {
-        $classMap = [];
-
-        if (class_exists(\OxidEsales\EshopProfessional\Core\Autoload\VirtualNameSpaceClassMap::class)) {
-            $virtualNameSpaceClassMap = new \OxidEsales\EshopProfessional\Core\Autoload\VirtualNameSpaceClassMap();
-            $classMap = $virtualNameSpaceClassMap->getClassMap();
-        }
-
-        return $classMap;
-    }
-
-    /**
-     * Return the VirtualNameSpaceClassMap of OXID eSales eShop Enterprise Edition
-     *
-     * @return array
-     */
-    protected function getMapEnterprise()
-    {
-        $classMap = [];
-
-        if (class_exists(\OxidEsales\EshopEnterprise\Core\Autoload\VirtualNameSpaceClassMap::class)) {
-            $virtualNameSpaceClassMap = new \OxidEsales\EshopEnterprise\Core\Autoload\VirtualNameSpaceClassMap();
-            $classMap = $virtualNameSpaceClassMap->getClassMap();
-        }
-
-        return $classMap;
-    }
-
-    /**
-     * Get the virtual namespaces and the associated ReflectionClasses of the mapped classes
-     *
-     * @param array $classMap Mapping of classes in a virtual namespace real existing classes
-     *
-     * @return array The namespaces and their associated ReflectionClasses.
-     */
-    protected function getNameSpaces($classMap)
-    {
-        $nameSpaces = [];
-        foreach ($classMap as $virtualClass => $concreteClass) {
-            try {
-                $reflectionObject = new ReflectionClass($concreteClass);
-                $nameSpaces[$reflectionObject->getNamespaceName()][] = $reflectionObject;
-            } catch (ReflectionException $exception) {
-                $this->handleException($exception);
-            }
-        }
-
-        return $nameSpaces;
-    }
-
 
     /**
      * Get the backwards compatible classes and the associated ReflectionClasses of the mapped classes
