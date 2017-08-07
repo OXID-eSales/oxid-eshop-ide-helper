@@ -21,8 +21,12 @@
 
 namespace OxidEsales\EshopIdeHelper;
 
-use ReflectionClass;
-use ReflectionException;
+use \OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider;
+use \OxidEsales\UnifiedNameSpaceGenerator\BackwardsCompatibilityClassMapProvider;
+use \OxidEsales\UnifiedNameSpaceGenerator\Exceptions\OutputDirectoryValidationException;
+use \OxidEsales\Facts\Facts;
+use \Symfony\Component\Filesystem\Filesystem;
+use \Webmozart\PathUtil\Path;
 
 /**
  * Class Generator
@@ -32,96 +36,37 @@ use ReflectionException;
 class Generator
 {
 
-    /**
-     * There are some expected missing classes in OXID eSales Community Edition.
-     *
-     * @var array
-     */
-    private $bcExpectedMissingClasses = ['oxelement2shoprelationsservice',
-                                         'admin_beroles',
-                                         'admin_feroles',
-                                         'adminlinks_mall',
-                                         'admin_mall',
-                                         'article_mall',
-                                         'article_rights',
-                                         'article_rights_buyable_ajax',
-                                         'article_rights_visible_ajax',
-                                         'attribute_mall',
-                                         'category_mall',
-                                         'category_rights',
-                                         'category_rights_buyable_ajax',
-                                         'category_rights_visible_ajax',
-                                         'delivery_mall',
-                                         'deliveryset_mall',
-                                         'discount_mall',
-                                         'manufacturer_mall',
-                                         'news_mall',
-                                         'roles_begroups_ajax',
-                                         'roles_belist',
-                                         'roles_bemain',
-                                         'roles_beobject',
-                                         'roles_beuser',
-                                         'roles_beuser_ajax',
-                                         'roles_fegroups_ajax',
-                                         'roles_felist',
-                                         'roles_femain',
-                                         'roles_feuser',
-                                         'selectlist_mall',
-                                         'shop_cache',
-                                         'shop_mall',
-                                         'vendor_mall',
-                                         'voucherserie_mall',
-                                         'wrapping_mall',
-                                         'mallstart',
-                                         'oxicachebackend',
-                                         'oxfield2shop',
-                                         'oxrights',
-                                         'oxrole',
-                                         'oxshoprelations',
-                                         'oxadminrights',
-                                         'oxarticle2shoprelations',
-                                         'oxcachebackenddefault',
-                                         'oxfield2shop',
-                                         'oxrights',
-                                         'oxrole',
-                                         'oxshoprelations',
-                                         'oxadminrights',
-                                         'oxarticle2shoprelations',
-                                         'oxcachebackenddefault',
-                                         'oxcachebackendzsdisk',
-                                         'oxcachebackendzsshm',
-                                         'oxcache',
-                                         'oxcachebackend',
-                                         'oxcacheitem',
-                                         'oxfilecacheconnector',
-                                         'oxmemcachedcacheconnector',
-                                         'oxreverseproxyconnector',
-                                         'oxzenddiskcacheconnector',
-                                         'oxzendshmcacheconnector',
-                                         'oxreverseproxybackend',
-                                         'oxreverseproxyheader',
-                                         'oxreverseproxyurlgenerator',
-                                         'oxreverseproxyurlpartstoflush',
-                                         'oxcategory2shoprelations',
-                                         'oxelement2shoprelations',
-                                         'oxelement2shoprelationsdbgateway',
-                                         'oxelement2shoprelationssqlgenerator',
-                                         'oxaccessrightexception',
-                                         'oxexpirationemailbuilder',
-                                         'oxldap',
-                                         'oxserial',];
+    /** @var Facts */
+    private $facts = null;
 
-    /** @var null|string The path to the project root directory */
-    private $projectRootDirectory = null;
+    /** @var BackwardsCompatibilityClassMapProvider */
+    private $backwardsCompatibilityClassMapProvider = null;
+
+    /** @var UnifiedNameSpaceClassMapProvider */
+    private $unifiedNameSpaceClassMapProvider = null;
+
+    /** @var Filesystem */
+    private $fileSystem = null;
+
+    const ERROR_CODE_FILE_WRITE_ERROR = 1;
 
     /**
      * Generator constructor.
      *
-     * @param string $projectRootDirectory Project root directory
+     * @param Facts                                  $facts
+     * @param UnifiedNameSpaceClassMapProvider       $unifiedNameSpaceClassMapProvider
+     * @param BackwardsCompatibilityClassMapProvider $backwardsCompatibilityClassMapProvider
      */
-    public function __construct($projectRootDirectory)
-    {
-        $this->projectRootDirectory = $projectRootDirectory;
+    public function __construct(
+        Facts $facts,
+        UnifiedNameSpaceClassMapProvider $unifiedNameSpaceClassMapProvider,
+        BackwardsCompatibilityClassMapProvider $backwardsCompatibilityClassMapProvider
+    ) {
+        $this->facts = $facts;
+        $this->unifiedNameSpaceClassMapProvider = $unifiedNameSpaceClassMapProvider;
+        $this->backwardsCompatibilityClassMapProvider = $backwardsCompatibilityClassMapProvider;
+
+        $this->fileSystem = new Filesystem();
     }
 
     /**
@@ -129,104 +74,81 @@ class Generator
      */
     public function generate()
     {
-        $output = '';
         $output = $this->generateIdeHelperOutput();
-
-        file_put_contents($this->projectRootDirectory . '/.ide-helper.php', $output);
+        $this->writeIdeHelperFile($output);
     }
 
     /**
      * Generate the helper classes for a given class map
      *
-     * @param array $classMap
-     *
      * @return mixed|string
+     *
+     * @throws \Exception
      */
     protected function generateIdeHelperOutput()
     {
         $backwardsCompatibleClasses = [];
         $backwardsCompatibilityMap = $this->getBackwardsCompatibilityMap();
-        $backwardsCompatibleReflectionObjects = $this->getBackwardsCompatibleReflectionObjects($backwardsCompatibilityMap);
-        foreach ($backwardsCompatibleReflectionObjects as $backwardsCompatibleClassName => $reflectionObject) {
-            $virtualClassName = str_replace(
-                ['Community', 'Professional', 'Enterprise'],
-                ['', '', ''],
-                $reflectionObject->getName()
+
+        foreach ($backwardsCompatibilityMap as $fullyQualifiedUnifiedNamespaceClassName => $backwardsCompatibleClassName) {
+            $backwardsCompatibleClassMetaInformation = $this->collectInheritanceInformation(
+                $backwardsCompatibleClassName,
+                $fullyQualifiedUnifiedNamespaceClassName
             );
-            $backwardsCompatibleClasses[] = [
-                // Interfaces are abstract for Reflection too, here we want just abstract classes
-                'isAbstract'      => $reflectionObject->isAbstract() && !$reflectionObject->isInterface(),
-                'isInterface'     => $reflectionObject->isInterface(),
-                'childClassName'  => $backwardsCompatibleClassName,
-                'parentClassName' => $virtualClassName,
-            ];
+            if (!empty($backwardsCompatibleClassMetaInformation)) {
+                $backwardsCompatibleClasses[] = $backwardsCompatibleClassMetaInformation;
+            }
         }
 
         $smarty = $this->getSmarty();
         $smarty->assign('backwardsCompatibleClasses', $backwardsCompatibleClasses);
         $output = $smarty->fetch('main-template.tpl');
+        if (!is_string($output) || empty($output)) {
+            throw new \OutputDirectoryValidationException('Generation of the ide-helper content failed.');
+        }
 
         return $output;
     }
 
     /**
-     * Handle a given exception
+     * @param string $backwardsCompatibleClassName
+     * @param string $fullyQualifiedUnifiedNamespaceClassName
      *
-     * @param \Exception $exception
+     * @return array The backwards compatible classes with meta-information if it should be e.g. an abstract class
+     *
+     * @throws \Exception when the inheritance
      */
-    protected function handleException(\Exception $exception)
+    private function collectInheritanceInformation($backwardsCompatibleClassName, $fullyQualifiedUnifiedNamespaceClassName)
     {
-        echo 'Warning ' . $exception->getMessage() . PHP_EOL;
+        $backwardsCompatibleClassMetaInformation = [];
+        $unifiedNamespaceClassMap = $this->getUnifiedNamespaceClassMap();
+
+        if (array_key_exists($fullyQualifiedUnifiedNamespaceClassName, $unifiedNamespaceClassMap)) {
+            $backwardsCompatibleClassMetaInformation = [
+                'isAbstract'      => $unifiedNamespaceClassMap[$fullyQualifiedUnifiedNamespaceClassName]['isAbstract'],
+                'isInterface'     => $unifiedNamespaceClassMap[$fullyQualifiedUnifiedNamespaceClassName]['isInterface'],
+                'childClassName'  => $backwardsCompatibleClassName,
+                'parentClassName' => $fullyQualifiedUnifiedNamespaceClassName
+            ];
+        }
+        return $backwardsCompatibleClassMetaInformation;
     }
 
-    /**
-     * Handle a given exception
-     *
-     * @param \Exception $exception
-     */
-    protected function handleBackwardsCompatibleClassException(\Exception $exception)
-    {
-        /** There are some expected missing classes in OXID eSales Community Edition */
-        preg_match('/Class (.*?) does not exist/i', $exception->getMessage(), $matches);
-        if (isset($matches[1]) && in_array($matches[1], $this->bcExpectedMissingClasses)) {
-            return;
-        }
-        echo 'Warning ' . $exception->getMessage() . PHP_EOL;
-    }
 
     /**
-     * Get the backwards compatible classes and the associated ReflectionClasses of the mapped classes
-     *
-     * @param array $classMap Mapping of backwards compatible class names to virtual class names
-     *
-     * @return array The backwards compatible classes their associated ReflectionClasses.
+     * @return array
      */
-    protected function getBackwardsCompatibleReflectionObjects($classMap)
+    private function getBackwardsCompatibilityMap()
     {
-        $backwardsCompatibleClasses = [];
-        foreach ($classMap as $backwardsCompatibleClassName => $virtualClassName) {
-            try {
-                $reflectionObject = new ReflectionClass($backwardsCompatibleClassName);
-                $backwardsCompatibleClasses[$backwardsCompatibleClassName] = $reflectionObject;
-            } catch (ReflectionException $exception) {
-                $this->handleBackwardsCompatibleClassException($exception);
-            }
-        }
-
-        return $backwardsCompatibleClasses;
+        return $this->backwardsCompatibilityClassMapProvider->getClassMap();
     }
 
     /**
      * @return array
      */
-    public function getBackwardsCompatibilityMap()
+    private function getUnifiedNamespaceClassMap()
     {
-        $backwardsCompatibilityMap = array_flip(
-            include CORE_AUTOLOADER_PATH .
-                    'BackwardsCompatibilityClassMap.php'
-        );
-
-        return $backwardsCompatibilityMap;
+        return $this->unifiedNameSpaceClassMapProvider->getClassMap();
     }
 
 
@@ -253,5 +175,46 @@ class Generator
         $smarty->right_delimiter = '}}';
 
         return $smarty;
+    }
+
+    /**
+     * Validate the permission on the output directory
+     *
+     * @param string $outputDirectory
+     *
+     * @throws \Exception
+     */
+    protected function validateOutputDirectoryPermissions($outputDirectory)
+    {
+        if (!is_dir($outputDirectory)) {
+            throw new OutputDirectoryValidationException(
+                'The directory "' . $outputDirectory . '" where the ide-helper file has to be written to' .
+                ' does not exist. ' .
+                'Please create the directory "' . $outputDirectory . '" with write permissions for the user "' . get_current_user() . '" ' .
+                'and run this script again',
+                static::ERROR_CODE_FILE_WRITE_ERROR
+            );
+        } elseif (!is_writable($outputDirectory)) {
+            throw new OutputDirectoryValidationException(
+                'The directory "' . realpath($outputDirectory) . '" where the class files have to be written to' .
+                ' is not writable for user "' . get_current_user() . '". ' .
+                'Please fix the permissions on this directory ' .
+                'and run this script again',
+                static::ERROR_CODE_FILE_WRITE_ERROR
+            );
+        }
+    }
+
+    /**
+     * @param string $output
+     *
+     * @throws \Symfony\Component\Filesystem\Exception\IOException
+     */
+    private function writeIdeHelperFile($output)
+    {
+        $outputDirectory = $this->facts->getShopRootPath();
+        $this->validateOutputDirectoryPermissions($outputDirectory);
+
+        $this->fileSystem->dumpFile(Path::join($outputDirectory, '.ide-helper.php'), $output);
     }
 }

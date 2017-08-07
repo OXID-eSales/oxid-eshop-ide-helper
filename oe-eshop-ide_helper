@@ -16,29 +16,35 @@
  * You should have received a copy of the GNU General Public License
  * along with OXID eSales IDE code completion helper script. If not, see <http://www.gnu.org/licenses/>.
  *
- * @link      http://www.oxid-esales.com
+ * @link          http://www.oxid-esales.com
  * @copyright (C) OXID eSales AG 2003-2016
  */
 
-$projectRoot = dirname(dirname(dirname(dirname(__FILE__))));
+$installationRootPath = dirname(dirname(dirname(dirname(__FILE__))));
+$vendorPath = $installationRootPath . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR;
 
-if (!is_file($projectRoot . '/source/config.inc.php')) {
-    echo sprintf("\e[48;5;229m\e[38;5;0m%s\e[0m\n", "Shop config.inc.php must exist to use ide-helper.");
-    die();
-}
+require_once $vendorPath . 'autoload.php';
 
-require_once $projectRoot . '/source/bootstrap.php';
-
-/** moduleAutoload must be unregistered, as it would trigger a database connection, which may be not yet available */
-$moduleAutoload = \OxidEsales\EshopCommunity\Core\Autoload\ModuleAutoload::class ;
-spl_autoload_unregister([$moduleAutoload, 'autoload']);
-
-// TODO remove this line after auto loading via composer works
-require_once 'src/Generator.php';
-
-$generator = new OxidEsales\EshopIdeHelper\Generator($projectRoot);
 try {
+    $facts = new OxidEsales\Facts\Facts();
+    $unifiedNameSpaceClassMapProvider = new \OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider($facts);
+    $backwardsCompatibilityClassMapProvider = new \OxidEsales\UnifiedNameSpaceGenerator\BackwardsCompatibilityClassMapProvider($facts);
+
+    $generator = new OxidEsales\EshopIdeHelper\Generator(
+        $facts,
+        $unifiedNameSpaceClassMapProvider,
+        $backwardsCompatibilityClassMapProvider
+    );
     $generator->generate();
 } catch (\Exception $exception) {
-    print $exception->getTraceAsString();
+    $message = $exception->getMessage();
+    $code = $exception->getCode();
+    $traceString = $exception->getTraceAsString();
+
+    echo $message . PHP_EOL;
+    echo "error code: $code" . PHP_EOL;
+    echo "stack trace:" . PHP_EOL;
+    echo $traceString . PHP_EOL;
+    exit(1);
 }
+exit(0);

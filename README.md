@@ -1,16 +1,16 @@
 IDE code completion support for OXID eShop
 ==========================================
 
+[![Build Status](https://travis-ci.org/OXID-eSales/oxid-eshop-ide-helper.svg?branch=master)](https://travis-ci.org/OXID-eSales/oxid-eshop-ide-helper)
+
 Synapsis
 --------
 
 This component generates a helper file for your IDE, which enables you to use 
-autocompletion for OXID eShop specific classes.
+autocompletion for backwards compatible OXID eShop classes (e.g. class `oxArticle`).
 
 The name of the generated file is `.ide-helper.php` (note the leading dot). 
-It's located in the root directory of your OXID eShop project. The file maps 
-the generic virtual namespace classes to their edition-specific implementations,
-depending on the OXID eShop edition you use in your project.
+It's located in the root directory of your OXID eShop project. 
 
 Installation
 ------------
