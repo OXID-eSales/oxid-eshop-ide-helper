@@ -1,7 +1,7 @@
 {
   "name": "oxid-esales/oxideshop-ide-helper",
   "description": "OXID eShop IDE helper for code completion",
-  "license": "GPL-3.0",
+  "license": "GPL-3.0-only",
   "minimum-stability": "dev",
   "bin": ["./oe-eshop-ide_helper"],
   "prefer-stable": true,
