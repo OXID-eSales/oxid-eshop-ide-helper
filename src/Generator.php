@@ -35,7 +35,6 @@ use \Webmozart\PathUtil\Path;
  */
 class Generator
 {
-
     /** @var Facts */
     private $facts = null;
 
@@ -75,7 +74,10 @@ class Generator
     public function generate()
     {
         $output = $this->generateIdeHelperOutput();
-        $this->writeIdeHelperFile($output);
+        $this->writeIdeHelperFile($output, '.ide-helper.php');
+
+        $outputForPhpStormIde = $this->generatePhpStormIdeHelperOutput();
+        $this->writeIdeHelperFile($outputForPhpStormIde, '.phpstorm.meta.php/oxid.meta.php');
     }
 
     /**
@@ -104,8 +106,21 @@ class Generator
         $smarty->assign('backwardsCompatibleClasses', $backwardsCompatibleClasses);
         $output = $smarty->fetch('main-template.tpl');
         if (!is_string($output) || empty($output)) {
-            throw new \OutputDirectoryValidationException('Generation of the ide-helper content failed.');
+            throw new OutputDirectoryValidationException('Generation of the ide-helper content failed.');
         }
+
+        return $output;
+    }
+
+    /**
+     * Generate the helper classes for a given class map
+     *
+     * @return mixed|string
+     */
+    protected function generatePhpStormIdeHelperOutput()
+    {
+        $smarty = $this->getSmarty();
+        $output = $smarty->fetch('phpstorm.meta.php.tpl');
 
         return $output;
     }
@@ -208,13 +223,14 @@ class Generator
     /**
      * @param string $output
      *
-     * @throws \Symfony\Component\Filesystem\Exception\IOException
+     * @param $fileName
+     * @throws \Exception
      */
-    private function writeIdeHelperFile($output)
+    private function writeIdeHelperFile($output, $fileName)
     {
         $outputDirectory = $this->facts->getShopRootPath();
         $this->validateOutputDirectoryPermissions($outputDirectory);
 
-        $this->fileSystem->dumpFile(Path::join($outputDirectory, '.ide-helper.php'), $output);
+        $this->fileSystem->dumpFile(Path::join($outputDirectory, $fileName), $output);
     }
 }

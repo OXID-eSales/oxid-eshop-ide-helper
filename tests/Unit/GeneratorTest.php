@@ -99,6 +99,21 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $generator->generate();
     }
 
+    public function testGeneratePhpStormIdeHelper()
+    {
+        $pathToUnifiedNameSpaceClassMap = Path::join($this->getPathToTestData(), 'Valid', "UnifiedNameSpaceClassMap.php");
+        $pathToBackwardsCompatibilityClassMap = Path::join($this->getPathToTestData(), 'Valid', "BackwardsCompatibilityClassMap.php");
+
+        $generator = new \OxidEsales\EshopIdeHelper\Generator(
+            $this->getFactsMock(0777),
+            $this->getUnifiedNameSpaceClassMapProviderMock($pathToUnifiedNameSpaceClassMap),
+            $this->getBackwardsCompatibilityClassMapProviderMock($pathToBackwardsCompatibilityClassMap)
+        );
+        $generator->generate();
+
+        $this->assertFileExists(Path::join($this->getVirtualOutputDirectory() , '.phpstorm.meta.php/oxid.meta.php'));
+    }
+
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject|Facts
      */
