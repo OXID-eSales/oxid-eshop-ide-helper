@@ -36,6 +36,11 @@ If you upgrade an existing OXID eShop edition (>= 6.x), the IDE helper file
 should be updated afterwards. Simply run the above command after the upgrade 
 process.
 
+Bugs and Issues
+---------------
+
+If you experience any bugs or issues, please report them in the section **OXID eShop (all versions)** of https://bugs.oxid-esales.com.
+
 Note for PhpStorm users
 -----------------------
 
