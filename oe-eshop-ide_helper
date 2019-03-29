@@ -29,11 +29,13 @@ try {
     $facts = new OxidEsales\Facts\Facts();
     $unifiedNameSpaceClassMapProvider = new \OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider($facts);
     $backwardsCompatibilityClassMapProvider = new \OxidEsales\UnifiedNameSpaceGenerator\BackwardsCompatibilityClassMapProvider($facts);
+    $moduleExtendClassMapProvider = new \OxidEsales\EshopIdeHelper\ModuleExtendClassMapProvider($facts);
 
     $generator = new OxidEsales\EshopIdeHelper\Generator(
         $facts,
         $unifiedNameSpaceClassMapProvider,
-        $backwardsCompatibilityClassMapProvider
+        $backwardsCompatibilityClassMapProvider,
+        $moduleExtendClassMapProvider
     );
     $generator->generate();
 } catch (\Exception $exception) {

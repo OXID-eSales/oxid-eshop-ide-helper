@@ -10,3 +10,9 @@
 namespace PHPSTORM_META {
     override(\oxNew(0), type(0));
 }
+
+
+{{foreach from=$moduleParentClasses item=class}}
+{{include file="moduleparent-class-template.tpl" class=$class }}
+
+{{/foreach}}

@@ -44,6 +44,11 @@ class Generator
     /** @var UnifiedNameSpaceClassMapProvider */
     private $unifiedNameSpaceClassMapProvider = null;
 
+    /**
+     * @var ModuleExtendClassMapProvider
+     */
+    private $moduleExtendClassMapProvider = null;
+
     /** @var Filesystem */
     private $fileSystem = null;
 
@@ -55,15 +60,18 @@ class Generator
      * @param Facts                                  $facts
      * @param UnifiedNameSpaceClassMapProvider       $unifiedNameSpaceClassMapProvider
      * @param BackwardsCompatibilityClassMapProvider $backwardsCompatibilityClassMapProvider
+     * @param ModuleExtendClassMapProvider           $moduleExtendClassMapProvider
      */
     public function __construct(
         Facts $facts,
         UnifiedNameSpaceClassMapProvider $unifiedNameSpaceClassMapProvider,
-        BackwardsCompatibilityClassMapProvider $backwardsCompatibilityClassMapProvider
+        BackwardsCompatibilityClassMapProvider $backwardsCompatibilityClassMapProvider,
+        ModuleExtendClassMapProvider $moduleExtendClassMapProvider
     ) {
         $this->facts = $facts;
         $this->unifiedNameSpaceClassMapProvider = $unifiedNameSpaceClassMapProvider;
         $this->backwardsCompatibilityClassMapProvider = $backwardsCompatibilityClassMapProvider;
+        $this->moduleExtendClassMapProvider = $moduleExtendClassMapProvider;
 
         $this->fileSystem = new Filesystem();
     }
@@ -111,7 +119,7 @@ class Generator
 
         return $output;
     }
-
+    
     /**
      * Generate the helper classes for a given class map
      *
@@ -120,6 +128,7 @@ class Generator
     protected function generatePhpStormIdeHelperOutput()
     {
         $smarty = $this->getSmarty();
+        $smarty->assign('moduleParentClasses', $this->moduleExtendClassMapProvider->getModuleParentClassMap());
         $output = $smarty->fetch('phpstorm.meta.php.tpl');
 
         return $output;

@@ -28,6 +28,7 @@ use \OxidEsales\UnifiedNameSpaceGenerator\Exceptions\OutputDirectoryValidationEx
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Webmozart\PathUtil\Path;
+use OxidEsales\EshopIdeHelper\ModuleExtendClassMapProvider;
 
 /**
  * Class GeneratorTest
@@ -74,11 +75,13 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
         $pathToUnifiedNameSpaceClassMap = Path::join($this->getPathToTestData(), $testCaseFolder, "UnifiedNameSpaceClassMap.php");
         $pathToBackwardsCompatibilityClassMap = Path::join($this->getPathToTestData(), $testCaseFolder, "BackwardsCompatibilityClassMap.php");
         $pathToIdeHelperOutput = Path::join($this->getPathToTestData(), $testCaseFolder, ".ide-helper.php");
+        $pathToModuleExtendClassMap = Path::join($this->getPathToTestData(), 'Valid', "ModuleExtendClassMap.php");
 
         $generator = new \OxidEsales\EshopIdeHelper\Generator(
             $this->getFactsMock(0777),
             $this->getUnifiedNameSpaceClassMapProviderMock($pathToUnifiedNameSpaceClassMap),
-            $this->getBackwardsCompatibilityClassMapProviderMock($pathToBackwardsCompatibilityClassMap)
+            $this->getBackwardsCompatibilityClassMapProviderMock($pathToBackwardsCompatibilityClassMap),
+            $this->getModuleExtendClassMapProviderMock($pathToModuleExtendClassMap)
         );
         $generator->generate();
 
@@ -89,11 +92,13 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     {
         $pathToUnifiedNameSpaceClassMap = Path::join($this->getPathToTestData(), 'Valid', "UnifiedNameSpaceClassMap.php");
         $pathToBackwardsCompatibilityClassMap = Path::join($this->getPathToTestData(), 'Valid', "BackwardsCompatibilityClassMap.php");
+        $pathToModuleExtendClassMap = Path::join($this->getPathToTestData(), 'Valid', "ModuleExtendClassMap.php");
 
         $generator = new \OxidEsales\EshopIdeHelper\Generator(
             $this->getFactsMock(0555),
             $this->getUnifiedNameSpaceClassMapProviderMock($pathToUnifiedNameSpaceClassMap),
-            $this->getBackwardsCompatibilityClassMapProviderMock($pathToBackwardsCompatibilityClassMap)
+            $this->getBackwardsCompatibilityClassMapProviderMock($pathToBackwardsCompatibilityClassMap),
+            $this->getModuleExtendClassMapProviderMock($pathToModuleExtendClassMap, 'never')
         );
         $this->setExpectedException(OutputDirectoryValidationException::class);
         $generator->generate();
@@ -103,11 +108,13 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
     {
         $pathToUnifiedNameSpaceClassMap = Path::join($this->getPathToTestData(), 'Valid', "UnifiedNameSpaceClassMap.php");
         $pathToBackwardsCompatibilityClassMap = Path::join($this->getPathToTestData(), 'Valid', "BackwardsCompatibilityClassMap.php");
+        $pathToModuleExtendClassMap = Path::join($this->getPathToTestData(), 'Valid', "ModuleExtendClassMap.php");
 
         $generator = new \OxidEsales\EshopIdeHelper\Generator(
             $this->getFactsMock(0777),
             $this->getUnifiedNameSpaceClassMapProviderMock($pathToUnifiedNameSpaceClassMap),
-            $this->getBackwardsCompatibilityClassMapProviderMock($pathToBackwardsCompatibilityClassMap)
+            $this->getBackwardsCompatibilityClassMapProviderMock($pathToBackwardsCompatibilityClassMap),
+            $this->getModuleExtendClassMapProviderMock($pathToModuleExtendClassMap)
         );
         $generator->generate();
 
@@ -166,6 +173,27 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(array_flip($backwardsCompatibilityClassMap)));
 
         return $backwardsCompatibilityClassMapProviderMock;
+    }
+
+    /**
+     * @param string $pathToModuleExtendClassMap
+     * @param string $expectationMethod
+     *
+     * @return \PHPUnit_Framework_MockObject_MockObject|ModuleExtendClassMapProvider
+     */
+    private function getModuleExtendClassMapProviderMock($pathToModuleExtendClassMap, $expectationMethod = 'once')
+    {
+        $moduleExtendClassMap = include $pathToModuleExtendClassMap;
+
+        $moduleExtendClassMapProviderMock = $this->getMockBuilder(ModuleExtendClassMapProvider::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getModuleParentClassMap'])
+            ->getMock();
+        $moduleExtendClassMapProviderMock->expects($this->$expectationMethod())
+            ->method('getModuleParentClassMap')
+            ->will($this->returnValue($moduleExtendClassMap));
+
+        return $moduleExtendClassMapProviderMock;
     }
 
     private function getPathToTestData()
