@@ -11,18 +11,11 @@ $vendorPath = $installationRootPath . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY
 require_once $vendorPath . 'autoload.php';
 
 try {
-    $facts = new OxidEsales\Facts\Facts();
-    $unifiedNameSpaceClassMapProvider = new \OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider($facts);
-    $backwardsCompatibilityClassMapProvider = new \OxidEsales\UnifiedNameSpaceGenerator\BackwardsCompatibilityClassMapProvider($facts);
-    $moduleExtendClassMapProvider = new \OxidEsales\EshopIdeHelper\ModuleExtendClassMapProvider($facts);
 
-    $generator = new OxidEsales\EshopIdeHelper\Generator(
-        $facts,
-        $unifiedNameSpaceClassMapProvider,
-        $backwardsCompatibilityClassMapProvider,
-        $moduleExtendClassMapProvider
-    );
+    $helpFactory = new \OxidEsales\EshopIdeHelper\HelpFactory();
+    $generator = $helpFactory->getGenerator();
     $generator->generate();
+
 } catch (\Exception $exception) {
     $message = $exception->getMessage();
     $code = $exception->getCode();
