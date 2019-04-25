@@ -4,7 +4,7 @@
  * See LICENSE file for license details.
  */
 
-namespace OxidEsales\EshopIdeHelper\tests\Unit;
+namespace OxidEsales\EshopIdeHelper\tests\Integration;
 
 use OxidEsales\Facts\Facts;
 use OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider;
