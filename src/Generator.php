@@ -12,6 +12,7 @@ use \OxidEsales\UnifiedNameSpaceGenerator\Exceptions\OutputDirectoryValidationEx
 use \OxidEsales\Facts\Facts;
 use \Symfony\Component\Filesystem\Filesystem;
 use \Webmozart\PathUtil\Path;
+use OxidEsales\EshopIdeHelper\Core\ModuleExtendClassMapProvider;
 
 /**
  * Class Generator

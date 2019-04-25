@@ -13,7 +13,7 @@ use \OxidEsales\UnifiedNameSpaceGenerator\Exceptions\OutputDirectoryValidationEx
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Webmozart\PathUtil\Path;
-use OxidEsales\EshopIdeHelper\ModuleExtendClassMapProvider;
+use OxidEsales\EshopIdeHelper\Core\ModuleExtendClassMapProvider;
 
 /**
  * Class GeneratorTest
