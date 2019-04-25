@@ -41,6 +41,12 @@ Bugs and Issues
 
 If you experience any bugs or issues, please report them in the section **OXID eShop (all versions)** of https://bugs.oxid-esales.com.
 
+Known Issues
+------------
+
+Virtual module parent classes (*__parent) are clickable but the class chain is not bult. 
+This affects the case that multiple modules chain extend the same shop class 
+
 Note for PhpStorm users
 -----------------------
 
