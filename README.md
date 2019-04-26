@@ -44,8 +44,9 @@ If you experience any bugs or issues, please report them in the section **OXID e
 Known Issues
 ------------
 
-Virtual module parent classes (*__parent) are clickable but the class chain is not bult. 
-This affects the case that multiple modules chain extend the same shop class 
+Virtual module parent classes (*__parent) are clickable but the class chain is not built. 
+This affects the case that multiple modules chain extend the same shop class.
+Virtual parent classes for not namescpaed modules are not clickable. 
 
 Note for PhpStorm users
 -----------------------

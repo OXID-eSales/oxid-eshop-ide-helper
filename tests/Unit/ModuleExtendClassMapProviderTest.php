@@ -23,7 +23,8 @@ class ModuleExtendClassMapProviderTest extends \PHPUnit_Framework_TestCase
     {
         $testData = [
             'OxidEsales\TestModule\Core\Header'        => 'OxidEsales\Eshop\Core\Header',
-            'OxidEsales\TestModule\Core\ShopControl'   => 'OxidEsales\Eshop\Core\ShopControl'
+            'OxidEsales\TestModule\Core\ShopControl'   => 'OxidEsales\Eshop\Core\ShopControl',
+            'nonamespace_testmodule_header'            => 'OxidEsales\Eshop\Core\Header',
         ];
 
         $parser = $this->getMockBuilder(ModuleMetadataParser::class)
@@ -50,6 +51,13 @@ class ModuleExtendClassMapProviderTest extends \PHPUnit_Framework_TestCase
                 'childClassName'  => 'ShopControl_parent',
                 'parentClassName' => 'OxidEsales\\Eshop\\Core\\ShopControl',
                 'namespace'       => 'OxidEsales\\TestModule\\Core',
+            ],
+            [
+                'isAbstract'      => false,
+                'isInterface'     => false,
+                'childClassName'  => 'nonamespace_testmodule_header_parent',
+                'parentClassName' => 'OxidEsales\\Eshop\\Core\\Header',
+                'namespace'       => '',
             ]
         ];
 
