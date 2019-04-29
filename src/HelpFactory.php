@@ -3,6 +3,7 @@
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
  */
+
 namespace OxidEsales\EshopIdeHelper;
 
 use \Webmozart\PathUtil\Path;
@@ -15,8 +16,6 @@ use OxidEsales\UnifiedNameSpaceGenerator\BackwardsCompatibilityClassMapProvider;
 
 /**
  * Class HelpFactory: assemble all needed objects
- *
- * @package OxidEsales\EshopIdeHelper
  */
 class HelpFactory
 {

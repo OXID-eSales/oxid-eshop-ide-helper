@@ -9,11 +9,6 @@ namespace OxidEsales\EshopIdeHelper\tests\Integration;
 use OxidEsales\EshopIdeHelper\HelpFactory;
 use OxidEsales\EshopIdeHelper\Generator;
 
-/**
- * Class HelpFactoryTest
- *
- * @package OxidEsales\EshopIdeHelper\tests\Integration
- */
 class HelpFactoryTest extends \PHPUnit_Framework_TestCase
 {
     /**

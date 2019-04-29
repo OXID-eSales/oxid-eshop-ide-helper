@@ -3,14 +3,13 @@
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
  */
+
 namespace OxidEsales\EshopIdeHelper\Core;
 
 use \Webmozart\PathUtil\Path;
 
 /**
  * Class DirectoryScanner: Recursively scan given path for matching files (case insensitive).
- *
- * @package OxidEsales\EshopIdeHelper\Core
  */
 class DirectoryScanner
 {
