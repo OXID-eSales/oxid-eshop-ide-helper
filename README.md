@@ -12,6 +12,13 @@ autocompletion for backwards compatible OXID eShop classes (e.g. class `oxArticl
 The name of the generated file is `.ide-helper.php` (note the leading dot). 
 It's located in the root directory of your OXID eShop project. 
 
+Also this component generates a helper file for PhpStorm IDE so that virtual module 
+parent classes (*_parent) of namespaced modules are clickable. The name of the 
+generated file is `.phpstorm.meta.php/oxid.meta.php`. 
+This enables you to find the related shop class that is extended by a module.
+
+NOTE: in case of changes in modules please update the helper file as described below.
+ 
 Installation
 ------------
 
@@ -44,7 +51,7 @@ If you experience any bugs or issues, please report them in the section **OXID e
 Known Issues
 ------------
 
-Virtual module parent classes (*__parent) are clickable but the class chain is not built. 
+Virtual module parent classes (*_parent) are clickable but the class chain is not built. 
 This affects the case that multiple modules chain extend the same shop class.
 Virtual parent classes for not namescpaed modules are not clickable. 
 

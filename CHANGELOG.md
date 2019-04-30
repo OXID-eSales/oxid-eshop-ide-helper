@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.2.0] - Unreleased
+
+### Added
+
+* Added support for namespaced modules "clickable virtual *_parent classes" for PhpStorm IDE.
+ 
 ## [3.1.2] - 2018-07-31
 
 ### Changed
