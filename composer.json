@@ -6,7 +6,7 @@
   "bin": ["./oe-eshop-ide_helper"],
   "prefer-stable": true,
   "require": {
-    "php": ">=5.6",
+    "php": ">=7.0",
     "smarty/smarty": "^v2.6.30",
     "oxid-esales/oxideshop-facts": "^2.0.0",
     "composer-plugin-api": "^1.1.0",
