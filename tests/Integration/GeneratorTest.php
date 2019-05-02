@@ -20,7 +20,7 @@ use OxidEsales\EshopIdeHelper\Core\ModuleExtendClassMapProvider;
  *
  * @package OxidEsales\EshopIdeHelper\tests\Unit
  */
-class GeneratorTest extends \PHPUnit_Framework_TestCase
+class GeneratorTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -85,7 +85,7 @@ class GeneratorTest extends \PHPUnit_Framework_TestCase
             $this->getBackwardsCompatibilityClassMapProviderMock($pathToBackwardsCompatibilityClassMap),
             $this->getModuleExtendClassMapProviderMock($pathToModuleExtendClassMap, 'never')
         );
-        $this->setExpectedException(OutputDirectoryValidationException::class);
+        $this->expectException(OutputDirectoryValidationException::class);
         $generator->generate();
     }
 

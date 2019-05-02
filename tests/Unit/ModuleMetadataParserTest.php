@@ -10,7 +10,7 @@ use \Webmozart\PathUtil\Path;
 use OxidEsales\EshopIdeHelper\Core\DirectoryScanner;
 use OxidEsales\EshopIdeHelper\Core\ModuleMetadataParser;
 
-class ModuleMetadataParserTest extends \PHPUnit_Framework_TestCase
+class ModuleMetadataParserTest extends \PHPUnit\Framework\TestCase
 {
 
     /**

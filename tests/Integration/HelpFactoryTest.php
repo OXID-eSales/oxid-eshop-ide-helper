@@ -9,7 +9,7 @@ namespace OxidEsales\EshopIdeHelper\tests\Integration;
 use OxidEsales\EshopIdeHelper\HelpFactory;
 use OxidEsales\EshopIdeHelper\Generator;
 
-class HelpFactoryTest extends \PHPUnit_Framework_TestCase
+class HelpFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Verify that generator can be constructed.

@@ -9,7 +9,7 @@ namespace OxidEsales\EshopIdeHelper\tests\Unit;
 use OxidEsales\EshopIdeHelper\Core\ModuleMetadataParser;
 use OxidEsales\EshopIdeHelper\Core\ModuleExtendClassMapProvider;
 
-class ModuleExtendClassMapProviderTest extends \PHPUnit_Framework_TestCase
+class ModuleExtendClassMapProviderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Success case.

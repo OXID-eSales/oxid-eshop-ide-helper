@@ -8,7 +8,7 @@ namespace OxidEsales\EshopIdeHelper\tests\Unit;
 
 use OxidEsales\EshopIdeHelper\Core\DirectoryScanner;
 
-class DirectoryScannerTest extends \PHPUnit_Framework_TestCase
+class DirectoryScannerTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
