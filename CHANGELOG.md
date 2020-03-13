@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [3.2.0] - Unreleased
 
 ### Changed
-
-* Update testing library version.
-* Add support for PHP 7.2, drop support for PHP 5.6.
+- Update symfony components to version 5
+- Update testing library version.
+- Add support for PHP 7.2, drop support for PHP 5.6.
 
 ### Added
 

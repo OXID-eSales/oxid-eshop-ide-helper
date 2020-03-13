@@ -8,11 +8,11 @@
   "require": {
     "php": ">=7.0",
     "smarty/smarty": "^v2.6.30",
-    "oxid-esales/oxideshop-facts": "dev-master-update_symfony-OXDEV-3039",
+    "oxid-esales/oxideshop-facts": "dev-master",
     "composer-plugin-api": "^1.1.0",
     "symfony/filesystem": "^5.0.4",
     "webmozart/path-util": "^2.3",
-    "oxid-esales/oxideshop-unified-namespace-generator": "dev-master-update_symfony-OXDEV-3039"
+    "oxid-esales/oxideshop-unified-namespace-generator": "dev-master"
   },
   "require-dev": {
     "phpunit/phpunit": "~6",
