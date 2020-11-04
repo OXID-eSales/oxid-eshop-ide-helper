@@ -4,12 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+## [master] - Unreleased
 
 ### Changed
 - Update symfony components to version 5
-- Update testing library version.
-- Add support for PHP 7.2, drop support for PHP 5.6.
+
+## [4.0.0] - 2020-11-04
+
+### Changed
+
+* Update testing library version.
+* Add support for PHP 7.2, drop support for PHP 5.6.
+* Support for the composer v2
 
 ### Added
 
