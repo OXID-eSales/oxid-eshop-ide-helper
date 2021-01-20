@@ -9,7 +9,7 @@
     "php": ">=7.0",
     "smarty/smarty": "^v2.6.30",
     "oxid-esales/oxideshop-facts": "dev-b-6.3.x",
-    "symfony/filesystem": "^3.3",
+    "symfony/filesystem": "^3.3 || ^4.4.17",
     "webmozart/path-util": "^2.3",
     "oxid-esales/oxideshop-unified-namespace-generator": "dev-b-6.3.x"
   },
