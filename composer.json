@@ -8,10 +8,10 @@
   "require": {
     "php": ">=7.0",
     "smarty/smarty": "^v2.6.30",
-    "oxid-esales/oxideshop-facts": "^2.0.0",
+    "oxid-esales/oxideshop-facts": "dev-b-6.3.x",
     "symfony/filesystem": "^3.3",
     "webmozart/path-util": "^2.3",
-    "oxid-esales/oxideshop-unified-namespace-generator": "^1.0.0 || ^2.0.0"
+    "oxid-esales/oxideshop-unified-namespace-generator": "dev-b-6.3.x"
   },
   "require-dev": {
     "phpunit/phpunit": "~6",
