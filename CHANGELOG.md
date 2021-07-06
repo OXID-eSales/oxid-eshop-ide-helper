@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Update symfony components to version 5
 
+## [4.1.0] - 2021-04-13
+
+### Added
+
+* Support for PHP 8.0
+
 ## [4.0.0] - 2020-11-04
 
 ### Changed
