@@ -6,12 +6,12 @@
   "bin": ["./oe-eshop-ide_helper"],
   "prefer-stable": true,
   "require": {
-    "php": ">=7.3",
+    "php": ">=7.4",
     "smarty/smarty": "^v2.6.30",
-    "oxid-esales/oxideshop-facts": "^3.0.0",
+    "oxid-esales/oxideshop-facts": "*",
     "symfony/filesystem": "^5.0.4",
     "webmozart/path-util": "^2.3",
-    "oxid-esales/oxideshop-unified-namespace-generator": "^3.0.0"
+    "oxid-esales/oxideshop-unified-namespace-generator": "*"
   },
   "require-dev": {
     "phpunit/phpunit": "~9",
