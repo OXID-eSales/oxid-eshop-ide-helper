@@ -2,24 +2,26 @@
   "name": "oxid-esales/oxideshop-ide-helper",
   "description": "OXID eShop IDE helper for code completion",
   "license": "GPL-3.0-only",
-  "minimum-stability": "dev",
-  "bin": ["./oe-eshop-ide_helper"],
-  "prefer-stable": true,
   "require": {
     "php": ">=7.4",
-    "smarty/smarty": "^v2.6.30",
     "oxid-esales/oxideshop-facts": "*",
+    "oxid-esales/oxideshop-unified-namespace-generator": "*",
+    "smarty/smarty": "^v2.6.30",
     "symfony/filesystem": "^5.0.4",
-    "webmozart/path-util": "^2.3",
-    "oxid-esales/oxideshop-unified-namespace-generator": "*"
+    "webmozart/path-util": "^2.3"
   },
   "require-dev": {
-    "phpunit/phpunit": "~9",
-    "mikey179/vfsstream": "~1.6.0"
+    "mikey179/vfsstream": "~1.6.0",
+    "phpunit/phpunit": "~9"
   },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "autoload": {
     "psr-4": {
       "OxidEsales\\EshopIdeHelper\\": "./src"
     }
-  }
+  },
+  "bin": [
+    "./oe-eshop-ide_helper"
+  ]
 }
