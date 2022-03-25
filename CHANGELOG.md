@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v7.0.0] - Unreleased
+
+### Removed
+- PHP v7 support
+
 ## [6.0.0] - Unreleased
 
 ### Removed
