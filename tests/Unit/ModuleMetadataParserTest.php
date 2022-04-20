@@ -1,22 +1,25 @@
 <?php
+
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
  */
 
+declare(strict_types=1);
+
 namespace OxidEsales\EshopIdeHelper\tests\Unit;
 
-use \Webmozart\PathUtil\Path;
+use PHPUnit\Framework\TestCase;
+use Webmozart\PathUtil\Path;
 use OxidEsales\EshopIdeHelper\Core\DirectoryScanner;
 use OxidEsales\EshopIdeHelper\Core\ModuleMetadataParser;
 
-class ModuleMetadataParserTest extends \PHPUnit\Framework\TestCase
+final class ModuleMetadataParserTest extends TestCase
 {
-
     /**
      * Success case.
      */
-    public function testGetExtendedClasses()
+    public function testGetExtendedClasses(): void
     {
         $testData = [
             Path::join([__DIR__, 'testData', 'example_1.php']),
@@ -28,9 +31,9 @@ class ModuleMetadataParserTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->setMethods(['getFilePaths'])
             ->getMock();
-        $scanner->expects($this->any())
+        $scanner
             ->method('getFilePaths')
-            ->will($this->returnValue($testData));
+            ->willReturn($testData);
 
         $parser = new ModuleMetadataParser($scanner);
 
@@ -40,13 +43,13 @@ class ModuleMetadataParserTest extends \PHPUnit\Framework\TestCase
             'OxidEsales\TestModule\Core\WidgetControl' => 'OxidEsales\Eshop\Core\WidgetControl',
             'nonamespace_testmodule_header'            => 'OxidEsales\Eshop\Core\Header',
         ];
-        $this->assertEquals($expected , $parser->getChainExtendedClasses());
+        $this->assertEquals($expected, $parser->getChainExtendedClasses());
     }
 
     /**
      * Success case.
      */
-    public function testNoClasses()
+    public function testNoClasses(): void
     {
         $testData = [
             Path::join([__DIR__, 'testData', 'example_2.php']),
@@ -56,9 +59,9 @@ class ModuleMetadataParserTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->setMethods(['getFilePaths'])
             ->getMock();
-        $scanner->expects($this->any())
+        $scanner
             ->method('getFilePaths')
-            ->will($this->returnValue($testData));
+            ->willReturn($testData);
 
         $parser = new ModuleMetadataParser($scanner);
 

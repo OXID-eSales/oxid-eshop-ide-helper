@@ -1,39 +1,36 @@
 <?php
+
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
  */
 
+declare(strict_types=1);
+
 namespace OxidEsales\EshopIdeHelper\tests\Integration;
 
+use OxidEsales\EshopIdeHelper\Generator;
 use OxidEsales\Facts\Facts;
 use OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider;
 use OxidEsales\UnifiedNameSpaceGenerator\BackwardsCompatibilityClassMapProvider;
-use \OxidEsales\UnifiedNameSpaceGenerator\Exceptions\OutputDirectoryValidationException;
+use OxidEsales\UnifiedNameSpaceGenerator\Exceptions\OutputDirectoryValidationException;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Webmozart\PathUtil\Path;
 use OxidEsales\EshopIdeHelper\Core\ModuleExtendClassMapProvider;
 
-/**
- * Class GeneratorTest
- *
- * @package OxidEsales\EshopIdeHelper\tests\Unit
- */
-class GeneratorTest extends \PHPUnit\Framework\TestCase
+final class GeneratorTest extends TestCase
 {
-
     /**
      * @var vfsStreamDirectory
      */
     private $vfsStreamDirectory = null;
 
-    const ROOT_DIRECTORY = 'root';
+    private const ROOT_DIRECTORY = 'root';
 
-    /**
-     * @return array
-     */
-    public function providerClassMaps()
+    public function providerClassMaps(): array
     {
         return [
             /**
@@ -55,14 +52,22 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $testCaseFolder
      */
-    public function testGenerateValidCases($testCaseFolder)
+    public function testGenerateValidCases(string $testCaseFolder): void
     {
-        $pathToUnifiedNameSpaceClassMap = Path::join($this->getPathToTestData(), $testCaseFolder, "UnifiedNameSpaceClassMap.php");
-        $pathToBackwardsCompatibilityClassMap = Path::join($this->getPathToTestData(), $testCaseFolder, "BackwardsCompatibilityClassMap.php");
+        $pathToUnifiedNameSpaceClassMap = Path::join(
+            $this->getPathToTestData(),
+            $testCaseFolder,
+            "UnifiedNameSpaceClassMap.php"
+        );
+        $pathToBackwardsCompatibilityClassMap = Path::join(
+            $this->getPathToTestData(),
+            $testCaseFolder,
+            "BackwardsCompatibilityClassMap.php"
+        );
         $pathToIdeHelperOutput = Path::join($this->getPathToTestData(), $testCaseFolder, ".ide-helper.php");
         $pathToModuleExtendClassMap = Path::join($this->getPathToTestData(), 'Valid', "ModuleExtendClassMap.php");
 
-        $generator = new \OxidEsales\EshopIdeHelper\Generator(
+        $generator = new Generator(
             $this->getFactsMock(0777),
             $this->getUnifiedNameSpaceClassMapProviderMock($pathToUnifiedNameSpaceClassMap),
             $this->getBackwardsCompatibilityClassMapProviderMock($pathToBackwardsCompatibilityClassMap),
@@ -70,16 +75,30 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
         );
         $generator->generate();
 
-        $this->assertFileEquals($pathToIdeHelperOutput, Path::join($this->getVirtualOutputDirectory() , '.ide-helper.php'));
+        $this->assertFileEquals(
+            $pathToIdeHelperOutput,
+            Path::join(
+                $this->getVirtualOutputDirectory(),
+                '.ide-helper.php'
+            )
+        );
     }
 
-    public function testGenerateOutputFileCanNotBeWritten()
+    public function testGenerateOutputFileCanNotBeWritten(): void
     {
-        $pathToUnifiedNameSpaceClassMap = Path::join($this->getPathToTestData(), 'Valid', "UnifiedNameSpaceClassMap.php");
-        $pathToBackwardsCompatibilityClassMap = Path::join($this->getPathToTestData(), 'Valid', "BackwardsCompatibilityClassMap.php");
+        $pathToUnifiedNameSpaceClassMap = Path::join(
+            $this->getPathToTestData(),
+            'Valid',
+            "UnifiedNameSpaceClassMap.php"
+        );
+        $pathToBackwardsCompatibilityClassMap = Path::join(
+            $this->getPathToTestData(),
+            'Valid',
+            "BackwardsCompatibilityClassMap.php"
+        );
         $pathToModuleExtendClassMap = Path::join($this->getPathToTestData(), 'Valid', "ModuleExtendClassMap.php");
 
-        $generator = new \OxidEsales\EshopIdeHelper\Generator(
+        $generator = new Generator(
             $this->getFactsMock(0555),
             $this->getUnifiedNameSpaceClassMapProviderMock($pathToUnifiedNameSpaceClassMap),
             $this->getBackwardsCompatibilityClassMapProviderMock($pathToBackwardsCompatibilityClassMap),
@@ -89,13 +108,21 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
         $generator->generate();
     }
 
-    public function testGeneratePhpStormIdeHelper()
+    public function testGeneratePhpStormIdeHelper(): void
     {
-        $pathToUnifiedNameSpaceClassMap = Path::join($this->getPathToTestData(), 'Valid', "UnifiedNameSpaceClassMap.php");
-        $pathToBackwardsCompatibilityClassMap = Path::join($this->getPathToTestData(), 'Valid', "BackwardsCompatibilityClassMap.php");
+        $pathToUnifiedNameSpaceClassMap = Path::join(
+            $this->getPathToTestData(),
+            'Valid',
+            "UnifiedNameSpaceClassMap.php"
+        );
+        $pathToBackwardsCompatibilityClassMap = Path::join(
+            $this->getPathToTestData(),
+            'Valid',
+            "BackwardsCompatibilityClassMap.php"
+        );
         $pathToModuleExtendClassMap = Path::join($this->getPathToTestData(), 'Valid', "ModuleExtendClassMap.php");
 
-        $generator = new \OxidEsales\EshopIdeHelper\Generator(
+        $generator = new Generator(
             $this->getFactsMock(0777),
             $this->getUnifiedNameSpaceClassMapProviderMock($pathToUnifiedNameSpaceClassMap),
             $this->getBackwardsCompatibilityClassMapProviderMock($pathToBackwardsCompatibilityClassMap),
@@ -103,11 +130,11 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
         );
         $generator->generate();
 
-        $this->assertFileExists(Path::join($this->getVirtualOutputDirectory() , '.phpstorm.meta.php/oxid.meta.php'));
+        $this->assertFileExists(Path::join($this->getVirtualOutputDirectory(), '.phpstorm.meta.php/oxid.meta.php'));
     }
 
     /**
-     * @return \PHPUnit_Framework_MockObject_MockObject|Facts
+     * @return MockObject|Facts
      */
     private function getFactsMock($permissionsForShopRootPath)
     {
@@ -116,16 +143,16 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $factsMock->expects($this->any())
             ->method('getShopRootPath')
-            ->will($this->returnValue($this->getVirtualOutputDirectory($permissionsForShopRootPath)));
+            ->willReturn($this->getVirtualOutputDirectory($permissionsForShopRootPath));
         return $factsMock;
     }
 
     /**
      * @param string $pathToUnifiedNameSpaceClassMap
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject|UnifiedNameSpaceClassMapProvider
+     * @return MockObject|UnifiedNameSpaceClassMapProvider
      */
-    private function getUnifiedNameSpaceClassMapProviderMock($pathToUnifiedNameSpaceClassMap)
+    private function getUnifiedNameSpaceClassMapProviderMock(string $pathToUnifiedNameSpaceClassMap)
     {
         $unifiedNamespaceClassMap = include $pathToUnifiedNameSpaceClassMap;
 
@@ -135,7 +162,7 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $unifiedNameSpaceClassMapProviderMock->expects($this->any())
             ->method('getClassMap')
-            ->will($this->returnValue($unifiedNamespaceClassMap));
+            ->willReturn($unifiedNamespaceClassMap);
 
         return $unifiedNameSpaceClassMapProviderMock;
     }
@@ -143,19 +170,21 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
     /**
      * @param string $pathToBackwardsCompatibilityClassMap
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject|BackwardsCompatibilityClassMapProvider
+     * @return MockObject|BackwardsCompatibilityClassMapProvider
      */
-    private function getBackwardsCompatibilityClassMapProviderMock($pathToBackwardsCompatibilityClassMap)
+    private function getBackwardsCompatibilityClassMapProviderMock(string $pathToBackwardsCompatibilityClassMap)
     {
         $backwardsCompatibilityClassMap = include $pathToBackwardsCompatibilityClassMap;
 
-        $backwardsCompatibilityClassMapProviderMock = $this->getMockBuilder(BackwardsCompatibilityClassMapProvider::class)
+        $backwardsCompatibilityClassMapProviderMock = $this->getMockBuilder(
+            BackwardsCompatibilityClassMapProvider::class
+        )
             ->disableOriginalConstructor()
             ->setMethods(['getClassMap'])
             ->getMock();
         $backwardsCompatibilityClassMapProviderMock->expects($this->once())
             ->method('getClassMap')
-            ->will($this->returnValue(array_flip($backwardsCompatibilityClassMap)));
+            ->willReturn(array_flip($backwardsCompatibilityClassMap));
 
         return $backwardsCompatibilityClassMapProviderMock;
     }
@@ -164,7 +193,7 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
      * @param string $pathToModuleExtendClassMap
      * @param string $expectationMethod
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject|ModuleExtendClassMapProvider
+     * @return MockObject|ModuleExtendClassMapProvider
      */
     private function getModuleExtendClassMapProviderMock($pathToModuleExtendClassMap, $expectationMethod = 'once')
     {
@@ -176,7 +205,7 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $moduleExtendClassMapProviderMock->expects($this->$expectationMethod())
             ->method('getModuleParentClassMap')
-            ->will($this->returnValue($moduleExtendClassMap));
+            ->willReturn($moduleExtendClassMap);
 
         return $moduleExtendClassMapProviderMock;
     }
@@ -189,12 +218,12 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
     /**
      * Get path to virtual output directory.
      *
-     * @param int   $permissions Directory permissions
-     * @param array $structure   Optional directory structure
+     * @param int $permissions Directory permissions
+     * @param array|null $structure   Optional directory structure
      *
      * @return string
      */
-    private function getVirtualOutputDirectory($permissions = 0777, $structure = null)
+    private function getVirtualOutputDirectory(int $permissions = 0777, array $structure = null): string
     {
         if (!is_array($structure)) {
             $structure = [];
@@ -213,7 +242,7 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
      *
      * @return vfsStreamDirectory
      */
-    private function getVfsStreamDirectory()
+    private function getVfsStreamDirectory(): vfsStreamDirectory
     {
         if (is_null($this->vfsStreamDirectory)) {
             $this->vfsStreamDirectory = vfsStream::setup(self::ROOT_DIRECTORY);
@@ -227,9 +256,8 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
      *
      * @return string
      */
-    private function getVfsRootPath()
+    private function getVfsRootPath(): string
     {
         return vfsStream::url(self::ROOT_DIRECTORY) . DIRECTORY_SEPARATOR;
     }
-
 }

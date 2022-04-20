@@ -1,20 +1,24 @@
 <?php
+
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
  */
 
+declare(strict_types=1);
+
 namespace OxidEsales\EshopIdeHelper\tests\Unit;
 
 use OxidEsales\EshopIdeHelper\Core\ModuleMetadataParser;
 use OxidEsales\EshopIdeHelper\Core\ModuleExtendClassMapProvider;
+use PHPUnit\Framework\TestCase;
 
-class ModuleExtendClassMapProviderTest extends \PHPUnit\Framework\TestCase
+final class ModuleExtendClassMapProviderTest extends TestCase
 {
     /**
      * Success case.
      */
-    public function testGetClassMap()
+    public function testGetClassMap(): void
     {
         $testData = [
             'OxidEsales\TestModule\Core\Header'        => 'OxidEsales\Eshop\Core\Header',
@@ -26,9 +30,9 @@ class ModuleExtendClassMapProviderTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->setMethods(['getChainExtendedClasses'])
             ->getMock();
-        $parser->expects($this->any())
+        $parser
             ->method('getChainExtendedClasses')
-            ->will($this->returnValue($testData));
+            ->willReturn($testData);
 
         $classMap = new ModuleExtendClassMapProvider($parser);
 
@@ -56,6 +60,6 @@ class ModuleExtendClassMapProviderTest extends \PHPUnit\Framework\TestCase
             ]
         ];
 
-        $this->assertEquals($expected , $classMap->getModuleParentClassMap());
+        $this->assertEquals($expected, $classMap->getModuleParentClassMap());
     }
 }
