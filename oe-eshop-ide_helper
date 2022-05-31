@@ -5,7 +5,10 @@
  * See LICENSE file for license details.
  */
 
-$installationRootPath = dirname(dirname(dirname(dirname(__FILE__))));
+$installationRootPath = dirname(
+    __FILE__,
+    4
+);
 $vendorPath = $installationRootPath . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR;
 
 require_once $vendorPath . 'autoload.php';

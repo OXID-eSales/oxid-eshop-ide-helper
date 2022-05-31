@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Update symfony components to version 5
 
+## [4.2.0] - Unreleased
+
+### Removed
+- Support for PHP < v7.4
+
 ## [4.1.0] - 2021-04-13
 
 ### Added
