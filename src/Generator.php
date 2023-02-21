@@ -11,7 +11,7 @@ use \OxidEsales\UnifiedNameSpaceGenerator\BackwardsCompatibilityClassMapProvider
 use \OxidEsales\UnifiedNameSpaceGenerator\Exceptions\OutputDirectoryValidationException;
 use \OxidEsales\Facts\Facts;
 use \Symfony\Component\Filesystem\Filesystem;
-use \Webmozart\PathUtil\Path;
+use \Symfony\Component\Filesystem\Path;
 use OxidEsales\EshopIdeHelper\Core\ModuleExtendClassMapProvider;
 
 /**
@@ -105,7 +105,7 @@ class Generator
 
         return $output;
     }
-    
+
     /**
      * Generate the helper classes for a given class map
      *

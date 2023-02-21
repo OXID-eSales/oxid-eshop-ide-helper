@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace OxidEsales\EshopIdeHelper\tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use OxidEsales\EshopIdeHelper\Core\DirectoryScanner;
 use OxidEsales\EshopIdeHelper\Core\ModuleMetadataParser;
 

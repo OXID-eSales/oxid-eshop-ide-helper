@@ -6,7 +6,7 @@
 
 namespace OxidEsales\EshopIdeHelper;
 
-use \Webmozart\PathUtil\Path;
+use \Symfony\Component\Filesystem\Path;
 use OxidEsales\Facts\Facts;
 use OxidEsales\EshopIdeHelper\Core\DirectoryScanner;
 use OxidEsales\EshopIdeHelper\Core\ModuleMetadataParser;
