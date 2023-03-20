@@ -1,8 +1,6 @@
 IDE code completion support for OXID eShop
 ==========================================
 
-[![Build Status](https://travis-ci.org/OXID-eSales/oxid-eshop-ide-helper.svg?branch=master)](https://travis-ci.org/OXID-eSales/oxid-eshop-ide-helper)
-
 Synapsis
 --------
 
