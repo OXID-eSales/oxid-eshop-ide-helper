@@ -4,33 +4,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [6.0.1] - unreleased
+## [v6.1.0] - 2023-04-20
 
 ### Removed
 - Dependency to webmozart/path-util
 
-## [6.0.0] - 2022-10-28
+## [v6.0.0] - 2022-10-28
 
 ### Removed
 - PHP v7 support
 
-## [5.0.0] - 2021-07-06
+## [v5.0.0] - 2021-07-06
 
 ### Changed
 - Update symfony components to version 5
 
-## [4.2.0] - Unreleased
+## [v4.2.0] - Unreleased
 
 ### Removed
 - Support for PHP < v7.4
 
-## [4.1.0] - 2021-04-13
+## [v4.1.0] - 2021-04-13
 
 ### Added
 
 * Support for PHP 8.0
 
-## [4.0.0] - 2020-11-04
+## [v4.0.0] - 2020-11-04
 
 ### Changed
 
@@ -42,19 +42,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 * Added support for namespaced modules "clickable virtual *_parent classes" for PhpStorm IDE.
  
-## [3.1.2] - 2018-07-31
+## [v3.1.2] - 2018-07-31
 
 ### Changed
 
 * Added oxideshop-unified-namespace-generator dependency
 
-## [3.1.1] - 2018-07-31
+## [v3.1.1] - 2018-07-31
 
 ### Changed
 
 * Removed oxideshop-unified-namespace-generator dependency
 
-## [3.1.0] - 2018-02-12
+## [v3.1.0] - 2018-02-12
 
 ### Added
 
