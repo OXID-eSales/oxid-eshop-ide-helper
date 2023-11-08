@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [v6.1.1] - unreleased
+## [v6.2] - unreleased
+
+### Added
+- PHPUnit v10 support
+
+### Removed
+- PHPUnit v9 support
 
 ### Changed
 - License update

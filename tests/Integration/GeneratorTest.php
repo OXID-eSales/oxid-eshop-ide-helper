@@ -23,14 +23,11 @@ use OxidEsales\EshopIdeHelper\Core\ModuleExtendClassMapProvider;
 
 final class GeneratorTest extends TestCase
 {
-    /**
-     * @var vfsStreamDirectory
-     */
-    private $vfsStreamDirectory = null;
+    private null|vfsStreamDirectory $vfsStreamDirectory = null;
 
-    private const ROOT_DIRECTORY = 'root';
+    private static string $rootDir = 'root';
 
-    public function providerClassMaps(): array
+    public static function providerClassMaps(): array
     {
         return [
             /**
@@ -49,8 +46,6 @@ final class GeneratorTest extends TestCase
 
     /**
      * @dataProvider providerClassMaps
-     *
-     * @param string $testCaseFolder
      */
     public function testGenerateValidCases(string $testCaseFolder): void
     {
@@ -139,7 +134,7 @@ final class GeneratorTest extends TestCase
     private function getFactsMock($permissionsForShopRootPath)
     {
         $factsMock = $this->getMockBuilder(Facts::class)
-            ->setMethods(['getShopRootPath'])
+            ->onlyMethods(['getShopRootPath'])
             ->getMock();
         $factsMock->expects($this->any())
             ->method('getShopRootPath')
@@ -147,18 +142,14 @@ final class GeneratorTest extends TestCase
         return $factsMock;
     }
 
-    /**
-     * @param string $pathToUnifiedNameSpaceClassMap
-     *
-     * @return MockObject|UnifiedNameSpaceClassMapProvider
-     */
-    private function getUnifiedNameSpaceClassMapProviderMock(string $pathToUnifiedNameSpaceClassMap)
+
+    private function getUnifiedNameSpaceClassMapProviderMock(string $pathToUnifiedNameSpaceClassMap): MockObject
     {
         $unifiedNamespaceClassMap = include $pathToUnifiedNameSpaceClassMap;
 
         $unifiedNameSpaceClassMapProviderMock = $this->getMockBuilder(UnifiedNameSpaceClassMapProvider::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getClassMap'])
+            ->onlyMethods(['getClassMap'])
             ->getMock();
         $unifiedNameSpaceClassMapProviderMock->expects($this->any())
             ->method('getClassMap')
@@ -180,7 +171,7 @@ final class GeneratorTest extends TestCase
             BackwardsCompatibilityClassMapProvider::class
         )
             ->disableOriginalConstructor()
-            ->setMethods(['getClassMap'])
+            ->onlyMethods(['getClassMap'])
             ->getMock();
         $backwardsCompatibilityClassMapProviderMock->expects($this->once())
             ->method('getClassMap')
@@ -201,7 +192,7 @@ final class GeneratorTest extends TestCase
 
         $moduleExtendClassMapProviderMock = $this->getMockBuilder(ModuleExtendClassMapProvider::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getModuleParentClassMap'])
+            ->onlyMethods(['getModuleParentClassMap'])
             ->getMock();
         $moduleExtendClassMapProviderMock->expects($this->$expectationMethod())
             ->method('getModuleParentClassMap')
@@ -215,14 +206,6 @@ final class GeneratorTest extends TestCase
         return __DIR__ . DIRECTORY_SEPARATOR . 'testData' . DIRECTORY_SEPARATOR;
     }
 
-    /**
-     * Get path to virtual output directory.
-     *
-     * @param int $permissions Directory permissions
-     * @param array|null $structure   Optional directory structure
-     *
-     * @return string
-     */
     private function getVirtualOutputDirectory(int $permissions = 0777, array $structure = null): string
     {
         if (!is_array($structure)) {
@@ -236,28 +219,17 @@ final class GeneratorTest extends TestCase
         return $directory;
     }
 
-    /**
-     * Test helper.
-     * Getter for vfs stream directory.
-     *
-     * @return vfsStreamDirectory
-     */
     private function getVfsStreamDirectory(): vfsStreamDirectory
     {
         if (is_null($this->vfsStreamDirectory)) {
-            $this->vfsStreamDirectory = vfsStream::setup(self::ROOT_DIRECTORY);
+            $this->vfsStreamDirectory = vfsStream::setup(self::$rootDir);
         }
 
         return $this->vfsStreamDirectory;
     }
 
-    /**
-     * Returns the root url. It should be treated as usual file path.
-     *
-     * @return string
-     */
     private function getVfsRootPath(): string
     {
-        return vfsStream::url(self::ROOT_DIRECTORY) . DIRECTORY_SEPARATOR;
+        return vfsStream::url(self::$rootDir) . DIRECTORY_SEPARATOR;
     }
 }

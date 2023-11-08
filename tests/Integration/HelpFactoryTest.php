@@ -15,9 +15,6 @@ use PHPUnit\Framework\TestCase;
 
 final class HelpFactoryTest extends TestCase
 {
-    /**
-     * Verify that generator can be constructed.
-     */
     public function testGetGenerator(): void
     {
         $helper = new HelpFactory();
