@@ -23,9 +23,8 @@ use OxidEsales\EshopIdeHelper\Core\ModuleExtendClassMapProvider;
 
 final class GeneratorTest extends TestCase
 {
-    private null|vfsStreamDirectory $vfsStreamDirectory = null;
-
-    private static string $rootDir = 'root';
+    private ?vfsStreamDirectory $vfsStreamDirectory = null;
+    private string $rootDirectory = 'root';
 
     public static function providerClassMaps(): array
     {
@@ -128,10 +127,7 @@ final class GeneratorTest extends TestCase
         $this->assertFileExists(Path::join($this->getVirtualOutputDirectory(), '.phpstorm.meta.php/oxid.meta.php'));
     }
 
-    /**
-     * @return MockObject|Facts
-     */
-    private function getFactsMock($permissionsForShopRootPath)
+    private function getFactsMock($permissionsForShopRootPath): Facts|MockObject
     {
         $factsMock = $this->getMockBuilder(Facts::class)
             ->onlyMethods(['getShopRootPath'])
@@ -142,8 +138,9 @@ final class GeneratorTest extends TestCase
         return $factsMock;
     }
 
-
-    private function getUnifiedNameSpaceClassMapProviderMock(string $pathToUnifiedNameSpaceClassMap): MockObject
+    private function getUnifiedNameSpaceClassMapProviderMock(
+        string $pathToUnifiedNameSpaceClassMap
+    ): UnifiedNameSpaceClassMapProvider|MockObject
     {
         $unifiedNamespaceClassMap = include $pathToUnifiedNameSpaceClassMap;
 
@@ -158,12 +155,9 @@ final class GeneratorTest extends TestCase
         return $unifiedNameSpaceClassMapProviderMock;
     }
 
-    /**
-     * @param string $pathToBackwardsCompatibilityClassMap
-     *
-     * @return MockObject|BackwardsCompatibilityClassMapProvider
-     */
-    private function getBackwardsCompatibilityClassMapProviderMock(string $pathToBackwardsCompatibilityClassMap)
+    private function getBackwardsCompatibilityClassMapProviderMock(
+        string $pathToBackwardsCompatibilityClassMap
+    ): MockObject|BackwardsCompatibilityClassMapProvider
     {
         $backwardsCompatibilityClassMap = include $pathToBackwardsCompatibilityClassMap;
 
@@ -180,13 +174,10 @@ final class GeneratorTest extends TestCase
         return $backwardsCompatibilityClassMapProviderMock;
     }
 
-    /**
-     * @param string $pathToModuleExtendClassMap
-     * @param string $expectationMethod
-     *
-     * @return MockObject|ModuleExtendClassMapProvider
-     */
-    private function getModuleExtendClassMapProviderMock($pathToModuleExtendClassMap, $expectationMethod = 'once')
+    private function getModuleExtendClassMapProviderMock(
+        string $pathToModuleExtendClassMap,
+        string $expectationMethod = 'once'
+    ): ModuleExtendClassMapProvider|MockObject
     {
         $moduleExtendClassMap = include $pathToModuleExtendClassMap;
 
@@ -201,7 +192,7 @@ final class GeneratorTest extends TestCase
         return $moduleExtendClassMapProviderMock;
     }
 
-    private function getPathToTestData()
+    private function getPathToTestData(): string
     {
         return __DIR__ . DIRECTORY_SEPARATOR . 'testData' . DIRECTORY_SEPARATOR;
     }
@@ -222,7 +213,7 @@ final class GeneratorTest extends TestCase
     private function getVfsStreamDirectory(): vfsStreamDirectory
     {
         if (is_null($this->vfsStreamDirectory)) {
-            $this->vfsStreamDirectory = vfsStream::setup(self::$rootDir);
+            $this->vfsStreamDirectory = vfsStream::setup($this->rootDirectory);
         }
 
         return $this->vfsStreamDirectory;
@@ -230,6 +221,6 @@ final class GeneratorTest extends TestCase
 
     private function getVfsRootPath(): string
     {
-        return vfsStream::url(self::$rootDir) . DIRECTORY_SEPARATOR;
+        return vfsStream::url($this->rootDirectory) . DIRECTORY_SEPARATOR;
     }
 }
