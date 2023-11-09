@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - License update
 
+### Removed
+- Smarty template engine support
+
 ## [v6.1.0] - 2023-04-20
 
 ### Removed

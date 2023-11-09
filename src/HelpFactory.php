@@ -1,8 +1,11 @@
 <?php
+
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
  */
+
+declare(strict_types=1);
 
 namespace OxidEsales\EshopIdeHelper;
 
@@ -19,32 +22,18 @@ use OxidEsales\UnifiedNameSpaceGenerator\BackwardsCompatibilityClassMapProvider;
  */
 class HelpFactory
 {
-    const SCAN_FOR_FILENAME = 'metadata.php';
+    public function __construct(
+        private readonly string $scanForFilename = 'metadata.php',
+        private readonly string $scanForDirectory = 'modules',
+        private ?Facts $facts = null,
+        private ?UnifiedNameSpaceClassMapProvider $unifiedNameSpaceClassMapProvider = null,
+        private ?BackwardsCompatibilityClassMapProvider $backwardsCompatibilityClassMapProvider = null,
+        private ?ModuleExtendClassMapProvider $moduleExtendClassMapProvider = null
+    )
+    {
+    }
 
-    const SCAN_FOR_DIRECTORY = 'modules';
-
-    /** @var Facts */
-    private $facts;
-
-    /**
-     * @var UnifiedNameSpaceClassMapProvider
-     */
-    private $unifiedNameSpaceClassMapProvider;
-
-    /**
-     * @var BackwardsCompatibilityClassMapProvider
-     */
-    private $backwardsCompatibilityClassMapProvider;
-
-    /**
-     * @var ModuleExtendClassMapProvider
-     */
-    private $moduleExtendClassMapProvider;
-
-    /**
-     * @return Facts
-     */
-    public function getFacts()
+    public function getFacts(): Facts
     {
         if (!is_a($this->facts, Facts::class)) {
             $this->facts = new Facts();
@@ -53,10 +42,7 @@ class HelpFactory
         return $this->facts;
     }
 
-    /**
-     * @return UnifiedNameSpaceClassMapProvider
-     */
-    public function getUnifiedNameSpaceClassMapProvider()
+    public function getUnifiedNameSpaceClassMapProvider(): UnifiedNameSpaceClassMapProvider
     {
         if (!is_a($this->unifiedNameSpaceClassMapProvider, UnifiedNameSpaceClassMapProvider::class)) {
             $this->unifiedNameSpaceClassMapProvider = new UnifiedNameSpaceClassMapProvider($this->getFacts());
@@ -65,10 +51,7 @@ class HelpFactory
         return $this->unifiedNameSpaceClassMapProvider;
     }
 
-    /**
-     * @return BackwardsCompatibilityClassMapProvider
-     */
-    public function getBackwardsCompatibilityClassMapProvider()
+    public function getBackwardsCompatibilityClassMapProvider(): BackwardsCompatibilityClassMapProvider
     {
         if (!is_a($this->backwardsCompatibilityClassMapProvider, BackwardsCompatibilityClassMapProvider::class)) {
             $this->backwardsCompatibilityClassMapProvider = new BackwardsCompatibilityClassMapProvider($this->getFacts());
@@ -77,14 +60,11 @@ class HelpFactory
         return $this->backwardsCompatibilityClassMapProvider;
     }
 
-    /**
-     * @return ModuleExtendClassMapProvider
-     */
-    public function getModuleExtendClassMapProvider()
+    public function getModuleExtendClassMapProvider(): ModuleExtendClassMapProvider
     {
         if (!is_a($this->moduleExtendClassMapProvider, ModuleExtendClassMapProvider::class)) {
-            $modulesDirectory = Path::join($this->facts->getSourcePath(), self::SCAN_FOR_DIRECTORY);
-            $scanner = new DirectoryScanner(self::SCAN_FOR_FILENAME, $modulesDirectory);
+            $modulesDirectory = Path::join($this->facts->getSourcePath(), $this->scanForDirectory);
+            $scanner = new DirectoryScanner($this->scanForFilename, $modulesDirectory);
             $parser = new ModuleMetadataParser($scanner);
             $this->moduleExtendClassMapProvider =  new ModuleExtendClassMapProvider($parser);
         }
@@ -92,17 +72,13 @@ class HelpFactory
         return $this->moduleExtendClassMapProvider;
     }
 
-    /**
-     * @return Generator
-     */
-    public function getGenerator()
+    public function getGenerator(): Generator
     {
-        $generator = new Generator(
+        return new Generator(
             $this->getFacts(),
             $this->getUnifiedNameSpaceClassMapProvider(),
             $this->getBackwardsCompatibilityClassMapProvider(),
             $this->getModuleExtendClassMapProvider()
         );
-        return $generator;
     }
 }

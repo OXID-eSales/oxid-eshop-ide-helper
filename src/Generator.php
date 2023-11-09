@@ -1,8 +1,11 @@
 <?php
+
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
  */
+
+declare(strict_types=1);
 
 namespace OxidEsales\EshopIdeHelper;
 
@@ -12,60 +15,26 @@ use \OxidEsales\UnifiedNameSpaceGenerator\Exceptions\OutputDirectoryValidationEx
 use \OxidEsales\Facts\Facts;
 use \Symfony\Component\Filesystem\Filesystem;
 use \Symfony\Component\Filesystem\Path;
+use Symfony\Component\Templating\Loader\FilesystemLoader;
+use Symfony\Component\Templating\PhpEngine;
+use Symfony\Component\Templating\TemplateNameParser;
 use OxidEsales\EshopIdeHelper\Core\ModuleExtendClassMapProvider;
 
-/**
- * Class Generator
- *
- * @package OxidEsales\EshopIdeHelper
- */
 class Generator
 {
-    /** @var Facts */
-    private $facts = null;
-
-    /** @var BackwardsCompatibilityClassMapProvider */
-    private $backwardsCompatibilityClassMapProvider = null;
-
-    /** @var UnifiedNameSpaceClassMapProvider */
-    private $unifiedNameSpaceClassMapProvider = null;
-
-    /**
-     * @var ModuleExtendClassMapProvider
-     */
-    private $moduleExtendClassMapProvider = null;
-
-    /** @var Filesystem */
-    private $fileSystem = null;
-
-    const ERROR_CODE_FILE_WRITE_ERROR = 1;
-
-    /**
-     * Generator constructor.
-     *
-     * @param Facts                                  $facts
-     * @param UnifiedNameSpaceClassMapProvider       $unifiedNameSpaceClassMapProvider
-     * @param BackwardsCompatibilityClassMapProvider $backwardsCompatibilityClassMapProvider
-     * @param ModuleExtendClassMapProvider           $moduleExtendClassMapProvider
-     */
     public function __construct(
-        Facts $facts,
-        UnifiedNameSpaceClassMapProvider $unifiedNameSpaceClassMapProvider,
-        BackwardsCompatibilityClassMapProvider $backwardsCompatibilityClassMapProvider,
-        ModuleExtendClassMapProvider $moduleExtendClassMapProvider
-    ) {
-        $this->facts = $facts;
-        $this->unifiedNameSpaceClassMapProvider = $unifiedNameSpaceClassMapProvider;
-        $this->backwardsCompatibilityClassMapProvider = $backwardsCompatibilityClassMapProvider;
-        $this->moduleExtendClassMapProvider = $moduleExtendClassMapProvider;
-
-        $this->fileSystem = new Filesystem();
+        private readonly Facts $facts,
+        private readonly UnifiedNameSpaceClassMapProvider $unifiedNameSpaceClassMapProvider,
+        private readonly BackwardsCompatibilityClassMapProvider $backwardsCompatibilityClassMapProvider,
+        private readonly ModuleExtendClassMapProvider $moduleExtendClassMapProvider,
+        private readonly string $templateDir = __DIR__ . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR,
+        private readonly Filesystem $fileSystem = new Filesystem(),
+        private readonly int $fileWriteCodeError = 1
+    )
+    {
     }
 
-    /**
-     * Generate a helper file for IDE auto-completion
-     */
-    public function generate()
+    public function generate(): void
     {
         $output = $this->generateIdeHelperOutput();
         $this->writeIdeHelperFile($output, '.ide-helper.php');
@@ -74,14 +43,7 @@ class Generator
         $this->writeIdeHelperFile($outputForPhpStormIde, '.phpstorm.meta.php/oxid.meta.php');
     }
 
-    /**
-     * Generate the helper classes for a given class map
-     *
-     * @return mixed|string
-     *
-     * @throws \Exception
-     */
-    protected function generateIdeHelperOutput()
+    protected function generateIdeHelperOutput(): string
     {
         $backwardsCompatibleClasses = [];
         $backwardsCompatibilityMap = $this->getBackwardsCompatibilityMap();
@@ -96,9 +58,11 @@ class Generator
             }
         }
 
-        $smarty = $this->getSmarty();
-        $smarty->assign('backwardsCompatibleClasses', $backwardsCompatibleClasses);
-        $output = $smarty->fetch('main-template.tpl');
+        $templating = $this->getTemplatingEngine();
+        $output = $templating->render(
+            'main-template.php',
+            ['backwardsCompatibleClasses' => $backwardsCompatibleClasses]
+        );
         if (!is_string($output) || empty($output)) {
             throw new OutputDirectoryValidationException('Generation of the ide-helper content failed.');
         }
@@ -106,29 +70,19 @@ class Generator
         return $output;
     }
 
-    /**
-     * Generate the helper classes for a given class map
-     *
-     * @return mixed|string
-     */
-    protected function generatePhpStormIdeHelperOutput()
+    protected function generatePhpStormIdeHelperOutput(): string
     {
-        $smarty = $this->getSmarty();
-        $smarty->assign('moduleParentClasses', $this->moduleExtendClassMapProvider->getModuleParentClassMap());
-        $output = $smarty->fetch('phpstorm.meta.php.tpl');
-
-        return $output;
+        $templating = $this->getTemplatingEngine();
+        return $templating->render(
+            'phpstorm.meta.php',
+            ['moduleParentClasses' => $this->moduleExtendClassMapProvider->getModuleParentClassMap()]
+        );
     }
 
-    /**
-     * @param string $backwardsCompatibleClassName
-     * @param string $fullyQualifiedUnifiedNamespaceClassName
-     *
-     * @return array The backwards compatible classes with meta-information if it should be e.g. an abstract class
-     *
-     * @throws \Exception when the inheritance
-     */
-    private function collectInheritanceInformation($backwardsCompatibleClassName, $fullyQualifiedUnifiedNamespaceClassName)
+    private function collectInheritanceInformation(
+        $backwardsCompatibleClassName,
+        $fullyQualifiedUnifiedNamespaceClassName
+    ): array
     {
         $backwardsCompatibleClassMetaInformation = [];
         $unifiedNamespaceClassMap = $this->getUnifiedNamespaceClassMap();
@@ -144,57 +98,24 @@ class Generator
         return $backwardsCompatibleClassMetaInformation;
     }
 
-
-    /**
-     * @return array
-     */
-    private function getBackwardsCompatibilityMap()
+    private function getBackwardsCompatibilityMap(): array
     {
         return $this->backwardsCompatibilityClassMapProvider->getClassMap();
     }
 
-    /**
-     * @return array
-     */
-    private function getUnifiedNamespaceClassMap()
+    private function getUnifiedNamespaceClassMap(): array
     {
         return $this->unifiedNameSpaceClassMapProvider->getClassMap();
     }
 
-
-    /**
-     * Return an instance of smarty
-     *
-     * @return \Smarty
-     */
-    protected function getSmarty()
+    protected function getTemplatingEngine(): PhpEngine
     {
-        $smarty = new \Smarty();
-        $currentDirectory = dirname(__FILE__);
-        $smarty->template_dir = realpath(
-            $currentDirectory . DIRECTORY_SEPARATOR .
-            'smarty' . DIRECTORY_SEPARATOR .
-            'templates' . DIRECTORY_SEPARATOR
-        );
-        $smarty->compile_dir = realpath(
-            $currentDirectory . '' . DIRECTORY_SEPARATOR .
-            'smarty' . DIRECTORY_SEPARATOR .
-            'templates_c' . DIRECTORY_SEPARATOR
-        );
-        $smarty->left_delimiter = '{{';
-        $smarty->right_delimiter = '}}';
+        $filesystemLoader = new FilesystemLoader($this->templateDir . '%name%');
 
-        return $smarty;
+        return new PhpEngine(new TemplateNameParser(), $filesystemLoader);
     }
 
-    /**
-     * Validate the permission on the output directory
-     *
-     * @param string $outputDirectory
-     *
-     * @throws \Exception
-     */
-    protected function validateOutputDirectoryPermissions($outputDirectory)
+    protected function validateOutputDirectoryPermissions($outputDirectory): void
     {
         if (!is_dir($outputDirectory)) {
             throw new OutputDirectoryValidationException(
@@ -202,7 +123,7 @@ class Generator
                 ' does not exist. ' .
                 'Please create the directory "' . $outputDirectory . '" with write permissions for the user "' . get_current_user() . '" ' .
                 'and run this script again',
-                static::ERROR_CODE_FILE_WRITE_ERROR
+                $this->fileWriteCodeError
             );
         } elseif (!is_writable($outputDirectory)) {
             throw new OutputDirectoryValidationException(
@@ -210,18 +131,12 @@ class Generator
                 ' is not writable for user "' . get_current_user() . '". ' .
                 'Please fix the permissions on this directory ' .
                 'and run this script again',
-                static::ERROR_CODE_FILE_WRITE_ERROR
+                $this->fileWriteCodeError
             );
         }
     }
 
-    /**
-     * @param string $output
-     *
-     * @param $fileName
-     * @throws \Exception
-     */
-    private function writeIdeHelperFile($output, $fileName)
+    private function writeIdeHelperFile($output, $fileName): void
     {
         $outputDirectory = $this->facts->getShopRootPath();
         $this->validateOutputDirectoryPermissions($outputDirectory);

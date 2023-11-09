@@ -5,7 +5,7 @@
 
 namespace {
 
-    /** @deprecated since v6.0.0. This class will be remove in the future. Please use the corresponding class from the unified namespace. */
+    /** @deprecated since v6.0.0. This class will be removed in the future. Please use the corresponding class from the unified namespace. */
     class oxClassExistsInCommunityEdition extends \OxidEsales\Eshop\ClassExistsInCommunityEdition
     {
 

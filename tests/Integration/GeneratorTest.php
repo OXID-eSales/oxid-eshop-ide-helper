@@ -23,12 +23,8 @@ use OxidEsales\EshopIdeHelper\Core\ModuleExtendClassMapProvider;
 
 final class GeneratorTest extends TestCase
 {
-    /**
-     * @var vfsStreamDirectory
-     */
-    private $vfsStreamDirectory = null;
-
-    private const ROOT_DIRECTORY = 'root';
+    private ?vfsStreamDirectory $vfsStreamDirectory = null;
+    private string $rootDirectory = 'root';
 
     public function providerClassMaps(): array
     {
@@ -49,8 +45,6 @@ final class GeneratorTest extends TestCase
 
     /**
      * @dataProvider providerClassMaps
-     *
-     * @param string $testCaseFolder
      */
     public function testGenerateValidCases(string $testCaseFolder): void
     {
@@ -133,10 +127,7 @@ final class GeneratorTest extends TestCase
         $this->assertFileExists(Path::join($this->getVirtualOutputDirectory(), '.phpstorm.meta.php/oxid.meta.php'));
     }
 
-    /**
-     * @return MockObject|Facts
-     */
-    private function getFactsMock($permissionsForShopRootPath)
+    private function getFactsMock($permissionsForShopRootPath): Facts|MockObject
     {
         $factsMock = $this->getMockBuilder(Facts::class)
             ->setMethods(['getShopRootPath'])
@@ -147,12 +138,9 @@ final class GeneratorTest extends TestCase
         return $factsMock;
     }
 
-    /**
-     * @param string $pathToUnifiedNameSpaceClassMap
-     *
-     * @return MockObject|UnifiedNameSpaceClassMapProvider
-     */
-    private function getUnifiedNameSpaceClassMapProviderMock(string $pathToUnifiedNameSpaceClassMap)
+    private function getUnifiedNameSpaceClassMapProviderMock(
+        string $pathToUnifiedNameSpaceClassMap
+    ): UnifiedNameSpaceClassMapProvider|MockObject
     {
         $unifiedNamespaceClassMap = include $pathToUnifiedNameSpaceClassMap;
 
@@ -167,12 +155,9 @@ final class GeneratorTest extends TestCase
         return $unifiedNameSpaceClassMapProviderMock;
     }
 
-    /**
-     * @param string $pathToBackwardsCompatibilityClassMap
-     *
-     * @return MockObject|BackwardsCompatibilityClassMapProvider
-     */
-    private function getBackwardsCompatibilityClassMapProviderMock(string $pathToBackwardsCompatibilityClassMap)
+    private function getBackwardsCompatibilityClassMapProviderMock(
+        string $pathToBackwardsCompatibilityClassMap
+    ): MockObject|BackwardsCompatibilityClassMapProvider
     {
         $backwardsCompatibilityClassMap = include $pathToBackwardsCompatibilityClassMap;
 
@@ -189,13 +174,10 @@ final class GeneratorTest extends TestCase
         return $backwardsCompatibilityClassMapProviderMock;
     }
 
-    /**
-     * @param string $pathToModuleExtendClassMap
-     * @param string $expectationMethod
-     *
-     * @return MockObject|ModuleExtendClassMapProvider
-     */
-    private function getModuleExtendClassMapProviderMock($pathToModuleExtendClassMap, $expectationMethod = 'once')
+    private function getModuleExtendClassMapProviderMock(
+        string $pathToModuleExtendClassMap,
+        string $expectationMethod = 'once'
+    ): ModuleExtendClassMapProvider|MockObject
     {
         $moduleExtendClassMap = include $pathToModuleExtendClassMap;
 
@@ -210,19 +192,11 @@ final class GeneratorTest extends TestCase
         return $moduleExtendClassMapProviderMock;
     }
 
-    private function getPathToTestData()
+    private function getPathToTestData(): string
     {
         return __DIR__ . DIRECTORY_SEPARATOR . 'testData' . DIRECTORY_SEPARATOR;
     }
 
-    /**
-     * Get path to virtual output directory.
-     *
-     * @param int $permissions Directory permissions
-     * @param array|null $structure   Optional directory structure
-     *
-     * @return string
-     */
     private function getVirtualOutputDirectory(int $permissions = 0777, array $structure = null): string
     {
         if (!is_array($structure)) {
@@ -236,28 +210,17 @@ final class GeneratorTest extends TestCase
         return $directory;
     }
 
-    /**
-     * Test helper.
-     * Getter for vfs stream directory.
-     *
-     * @return vfsStreamDirectory
-     */
     private function getVfsStreamDirectory(): vfsStreamDirectory
     {
         if (is_null($this->vfsStreamDirectory)) {
-            $this->vfsStreamDirectory = vfsStream::setup(self::ROOT_DIRECTORY);
+            $this->vfsStreamDirectory = vfsStream::setup($this->rootDirectory);
         }
 
         return $this->vfsStreamDirectory;
     }
 
-    /**
-     * Returns the root url. It should be treated as usual file path.
-     *
-     * @return string
-     */
     private function getVfsRootPath(): string
     {
-        return vfsStream::url(self::ROOT_DIRECTORY) . DIRECTORY_SEPARATOR;
+        return vfsStream::url($this->rootDirectory) . DIRECTORY_SEPARATOR;
     }
 }

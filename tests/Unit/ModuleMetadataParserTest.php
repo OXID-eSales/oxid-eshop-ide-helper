@@ -22,9 +22,9 @@ final class ModuleMetadataParserTest extends TestCase
     public function testGetExtendedClasses(): void
     {
         $testData = [
-            Path::join([__DIR__, 'testData', 'example_1.php']),
-            Path::join([__DIR__, 'testData', 'example_2.php']),
-            Path::join([__DIR__, 'testData', 'example_3.php']),
+            Path::join(__DIR__, 'testData', 'example_1.php'),
+            Path::join(__DIR__, 'testData', 'example_2.php'),
+            Path::join(__DIR__, 'testData', 'example_3.php'),
         ];
 
         $scanner = $this->getMockBuilder(DirectoryScanner::class)
@@ -52,7 +52,7 @@ final class ModuleMetadataParserTest extends TestCase
     public function testNoClasses(): void
     {
         $testData = [
-            Path::join([__DIR__, 'testData', 'example_2.php']),
+            Path::join(__DIR__, 'testData', 'example_2.php'),
         ];
 
         $scanner = $this->getMockBuilder(DirectoryScanner::class)
