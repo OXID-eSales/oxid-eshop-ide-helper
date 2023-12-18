@@ -26,7 +26,7 @@ final class GeneratorTest extends TestCase
     private ?vfsStreamDirectory $vfsStreamDirectory = null;
     private string $rootDirectory = 'root';
 
-    public function providerClassMaps(): array
+    public static function providerClassMaps(): array
     {
         return [
             /**
@@ -130,7 +130,7 @@ final class GeneratorTest extends TestCase
     private function getFactsMock($permissionsForShopRootPath): Facts|MockObject
     {
         $factsMock = $this->getMockBuilder(Facts::class)
-            ->setMethods(['getShopRootPath'])
+            ->onlyMethods(['getShopRootPath'])
             ->getMock();
         $factsMock->expects($this->any())
             ->method('getShopRootPath')
@@ -140,13 +140,12 @@ final class GeneratorTest extends TestCase
 
     private function getUnifiedNameSpaceClassMapProviderMock(
         string $pathToUnifiedNameSpaceClassMap
-    ): UnifiedNameSpaceClassMapProvider|MockObject
-    {
+    ): UnifiedNameSpaceClassMapProvider|MockObject {
         $unifiedNamespaceClassMap = include $pathToUnifiedNameSpaceClassMap;
 
         $unifiedNameSpaceClassMapProviderMock = $this->getMockBuilder(UnifiedNameSpaceClassMapProvider::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getClassMap'])
+            ->onlyMethods(['getClassMap'])
             ->getMock();
         $unifiedNameSpaceClassMapProviderMock->expects($this->any())
             ->method('getClassMap')
@@ -157,15 +156,14 @@ final class GeneratorTest extends TestCase
 
     private function getBackwardsCompatibilityClassMapProviderMock(
         string $pathToBackwardsCompatibilityClassMap
-    ): MockObject|BackwardsCompatibilityClassMapProvider
-    {
+    ): MockObject|BackwardsCompatibilityClassMapProvider {
         $backwardsCompatibilityClassMap = include $pathToBackwardsCompatibilityClassMap;
 
         $backwardsCompatibilityClassMapProviderMock = $this->getMockBuilder(
             BackwardsCompatibilityClassMapProvider::class
         )
             ->disableOriginalConstructor()
-            ->setMethods(['getClassMap'])
+            ->onlyMethods(['getClassMap'])
             ->getMock();
         $backwardsCompatibilityClassMapProviderMock->expects($this->once())
             ->method('getClassMap')
@@ -177,13 +175,12 @@ final class GeneratorTest extends TestCase
     private function getModuleExtendClassMapProviderMock(
         string $pathToModuleExtendClassMap,
         string $expectationMethod = 'once'
-    ): ModuleExtendClassMapProvider|MockObject
-    {
+    ): ModuleExtendClassMapProvider|MockObject {
         $moduleExtendClassMap = include $pathToModuleExtendClassMap;
 
         $moduleExtendClassMapProviderMock = $this->getMockBuilder(ModuleExtendClassMapProvider::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getModuleParentClassMap'])
+            ->onlyMethods(['getModuleParentClassMap'])
             ->getMock();
         $moduleExtendClassMapProviderMock->expects($this->$expectationMethod())
             ->method('getModuleParentClassMap')

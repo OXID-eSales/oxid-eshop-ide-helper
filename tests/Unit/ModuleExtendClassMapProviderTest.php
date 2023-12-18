@@ -28,7 +28,7 @@ final class ModuleExtendClassMapProviderTest extends TestCase
 
         $parser = $this->getMockBuilder(ModuleMetadataParser::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getChainExtendedClasses'])
+            ->onlyMethods(['getChainExtendedClasses'])
             ->getMock();
         $parser
             ->method('getChainExtendedClasses')

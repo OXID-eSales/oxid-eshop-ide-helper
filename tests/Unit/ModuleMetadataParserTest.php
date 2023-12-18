@@ -29,7 +29,7 @@ final class ModuleMetadataParserTest extends TestCase
 
         $scanner = $this->getMockBuilder(DirectoryScanner::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getFilePaths'])
+            ->onlyMethods(['getFilePaths'])
             ->getMock();
         $scanner
             ->method('getFilePaths')
@@ -57,7 +57,7 @@ final class ModuleMetadataParserTest extends TestCase
 
         $scanner = $this->getMockBuilder(DirectoryScanner::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getFilePaths'])
+            ->onlyMethods(['getFilePaths'])
             ->getMock();
         $scanner
             ->method('getFilePaths')
