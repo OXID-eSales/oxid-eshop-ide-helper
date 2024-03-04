@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
@@ -23,7 +24,7 @@ class ModuleExtendClassMapProvider
      */
     public function __construct(ModuleMetadataParser $parser)
     {
-       $this->parser = $parser;
+        $this->parser = $parser;
     }
 
     /**

@@ -1,0 +1,6 @@
+/** @deprecated since v6.0.0. This class will be removed in the future. Please use the corresponding class from the unified namespace. */
+    {% if class.isInterface %}interface{% elseif class.isAbstract %}abstract class{% else %}class{% endif %} {{ class.childClassName }} extends \{{ class.parentClassName }}
+    {
+
+    }
+

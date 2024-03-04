@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
@@ -6,7 +7,7 @@
 
 namespace OxidEsales\EshopIdeHelper\Core;
 
-use \Symfony\Component\Filesystem\Path;
+use Symfony\Component\Filesystem\Path;
 
 /**
  * Class DirectoryScanner: Recursively scan given path for matching files (case insensitive).

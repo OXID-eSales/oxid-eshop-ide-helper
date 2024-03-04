@@ -1,0 +1,11 @@
+
+{% if not class.namespace is empty %}
+    namespace {{ class.namespace }} {
+        {% if class.isInterface %}
+            interface
+        {% elseif class.isAbstract %}
+            abstract class
+        {% else %}
+            class
+        {% endif %} {{ class.childClassName }} extends\ {{ class.parentClassName }}
+{% endif %}
