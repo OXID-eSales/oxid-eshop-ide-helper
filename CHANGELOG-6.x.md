@@ -11,6 +11,9 @@
 ### Changed
 - License update
 
+### Deprecated
+- Smarty support
+
 ## [v6.1.0] - 2023-04-20
 
 ### Removed

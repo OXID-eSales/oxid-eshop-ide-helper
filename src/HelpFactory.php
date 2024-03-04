@@ -19,8 +19,14 @@ use OxidEsales\UnifiedNameSpaceGenerator\BackwardsCompatibilityClassMapProvider;
  */
 class HelpFactory
 {
+    /**
+     * @deprecated will be removed in next major version
+     */
     const SCAN_FOR_FILENAME = 'metadata.php';
 
+    /**
+     * @deprecated will be removed in next major version
+     */
     const SCAN_FOR_DIRECTORY = 'modules';
 
     /** @var Facts */

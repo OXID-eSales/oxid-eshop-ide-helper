@@ -38,6 +38,9 @@ class Generator
     /** @var Filesystem */
     private $fileSystem = null;
 
+    /**
+     * @deprecated will be removed in next major version
+     */
     const ERROR_CODE_FILE_WRITE_ERROR = 1;
 
     /**
@@ -166,6 +169,7 @@ class Generator
      * Return an instance of smarty
      *
      * @return \Smarty
+     * @deprecated Smarty will be removed in next major version.
      */
     protected function getSmarty()
     {
