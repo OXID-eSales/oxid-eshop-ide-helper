@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace OxidEsales\EshopIdeHelper;
 
-use \Symfony\Component\Filesystem\Path;
+use Symfony\Component\Filesystem\Path;
 use OxidEsales\Facts\Facts;
 use OxidEsales\EshopIdeHelper\Core\DirectoryScanner;
 use OxidEsales\EshopIdeHelper\Core\ModuleMetadataParser;
@@ -22,16 +22,12 @@ use OxidEsales\UnifiedNameSpaceGenerator\BackwardsCompatibilityClassMapProvider;
  */
 class HelpFactory
 {
-    public function __construct(
-        private readonly string $scanForFilename = 'metadata.php',
-        private readonly string $scanForDirectory = 'modules',
-        private ?Facts $facts = null,
-        private ?UnifiedNameSpaceClassMapProvider $unifiedNameSpaceClassMapProvider = null,
-        private ?BackwardsCompatibilityClassMapProvider $backwardsCompatibilityClassMapProvider = null,
-        private ?ModuleExtendClassMapProvider $moduleExtendClassMapProvider = null
-    )
-    {
-    }
+    private string $scanForFilename = 'metadata.php';
+    private string $scanForDirectory = 'modules';
+    private ?Facts $facts = null;
+    private ?UnifiedNameSpaceClassMapProvider $unifiedNameSpaceClassMapProvider = null;
+    private ?BackwardsCompatibilityClassMapProvider $backwardsCompatibilityClassMapProvider = null;
+    private ?ModuleExtendClassMapProvider $moduleExtendClassMapProvider = null;
 
     public function getFacts(): Facts
     {
@@ -54,7 +50,9 @@ class HelpFactory
     public function getBackwardsCompatibilityClassMapProvider(): BackwardsCompatibilityClassMapProvider
     {
         if (!is_a($this->backwardsCompatibilityClassMapProvider, BackwardsCompatibilityClassMapProvider::class)) {
-            $this->backwardsCompatibilityClassMapProvider = new BackwardsCompatibilityClassMapProvider($this->getFacts());
+            $this->backwardsCompatibilityClassMapProvider = new BackwardsCompatibilityClassMapProvider(
+                $this->getFacts()
+            );
         }
 
         return $this->backwardsCompatibilityClassMapProvider;

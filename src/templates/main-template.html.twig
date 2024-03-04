@@ -1,13 +1,12 @@
-<?= '<?php' ?>
-
+{{ '<?php' }}
 /**
  * This file is used for IDE code completion
  */
 
 namespace {
 
-<?php foreach ($backwardsCompatibleClasses as $class) {
-    include 'backwards-compatible-class-template.php';
-}?>
+{% for class in backwardsCompatibleClasses %}
+    {% include 'backwards-compatible-class-template.html.twig' %}
+{% endfor %}
     exit("This file should not be included, only analyzed by your IDE");
 }

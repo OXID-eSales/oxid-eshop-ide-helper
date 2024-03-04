@@ -9,16 +9,15 @@ declare(strict_types=1);
 
 namespace OxidEsales\EshopIdeHelper;
 
-use \OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider;
-use \OxidEsales\UnifiedNameSpaceGenerator\BackwardsCompatibilityClassMapProvider;
-use \OxidEsales\UnifiedNameSpaceGenerator\Exceptions\OutputDirectoryValidationException;
-use \OxidEsales\Facts\Facts;
-use \Symfony\Component\Filesystem\Filesystem;
-use \Symfony\Component\Filesystem\Path;
-use Symfony\Component\Templating\Loader\FilesystemLoader;
-use Symfony\Component\Templating\PhpEngine;
-use Symfony\Component\Templating\TemplateNameParser;
+use OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider;
+use OxidEsales\UnifiedNameSpaceGenerator\BackwardsCompatibilityClassMapProvider;
+use OxidEsales\UnifiedNameSpaceGenerator\Exceptions\OutputDirectoryValidationException;
+use OxidEsales\Facts\Facts;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Path;
 use OxidEsales\EshopIdeHelper\Core\ModuleExtendClassMapProvider;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 class Generator
 {
@@ -30,8 +29,7 @@ class Generator
         private readonly string $templateDir = __DIR__ . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR,
         private readonly Filesystem $fileSystem = new Filesystem(),
         private readonly int $fileWriteCodeError = 1
-    )
-    {
+    ) {
     }
 
     public function generate(): void
@@ -48,19 +46,19 @@ class Generator
         $backwardsCompatibleClasses = [];
         $backwardsCompatibilityMap = $this->getBackwardsCompatibilityMap();
 
-        foreach ($backwardsCompatibilityMap as $fullyQualifiedUnifiedNamespaceClassName => $backwardsCompatibleClassName) {
+        foreach ($backwardsCompatibilityMap as $fullyQualifiedUnifiedNamespaceClass => $backwardsCompatibleClass) {
             $backwardsCompatibleClassMetaInformation = $this->collectInheritanceInformation(
-                $backwardsCompatibleClassName,
-                $fullyQualifiedUnifiedNamespaceClassName
+                $backwardsCompatibleClass,
+                $fullyQualifiedUnifiedNamespaceClass
             );
             if (!empty($backwardsCompatibleClassMetaInformation)) {
                 $backwardsCompatibleClasses[] = $backwardsCompatibleClassMetaInformation;
             }
         }
 
-        $templating = $this->getTemplatingEngine();
-        $output = $templating->render(
-            'main-template.php',
+        $twig = $this->getTwig();
+        $output = $twig->render(
+            'main-template.html.twig',
             ['backwardsCompatibleClasses' => $backwardsCompatibleClasses]
         );
         if (!is_string($output) || empty($output)) {
@@ -72,9 +70,9 @@ class Generator
 
     protected function generatePhpStormIdeHelperOutput(): string
     {
-        $templating = $this->getTemplatingEngine();
-        return $templating->render(
-            'phpstorm.meta.php',
+        $twig = $this->getTwig();
+        return $twig->render(
+            'phpstorm.meta.html.twig',
             ['moduleParentClasses' => $this->moduleExtendClassMapProvider->getModuleParentClassMap()]
         );
     }
@@ -82,8 +80,7 @@ class Generator
     private function collectInheritanceInformation(
         $backwardsCompatibleClassName,
         $fullyQualifiedUnifiedNamespaceClassName
-    ): array
-    {
+    ): array {
         $backwardsCompatibleClassMetaInformation = [];
         $unifiedNamespaceClassMap = $this->getUnifiedNamespaceClassMap();
 
@@ -108,11 +105,11 @@ class Generator
         return $this->unifiedNameSpaceClassMapProvider->getClassMap();
     }
 
-    protected function getTemplatingEngine(): PhpEngine
+    protected function getTwig(): Environment
     {
-        $filesystemLoader = new FilesystemLoader($this->templateDir . '%name%');
+        $loader = new FilesystemLoader($this->templateDir);
 
-        return new PhpEngine(new TemplateNameParser(), $filesystemLoader);
+        return new Environment($loader);
     }
 
     protected function validateOutputDirectoryPermissions($outputDirectory): void
@@ -121,8 +118,8 @@ class Generator
             throw new OutputDirectoryValidationException(
                 'The directory "' . $outputDirectory . '" where the ide-helper file has to be written to' .
                 ' does not exist. ' .
-                'Please create the directory "' . $outputDirectory . '" with write permissions for the user "' . get_current_user() . '" ' .
-                'and run this script again',
+                'Please create the directory "' . $outputDirectory . '" with write permissions for the user "' .
+                get_current_user() . '" ' . 'and run this script again',
                 $this->fileWriteCodeError
             );
         } elseif (!is_writable($outputDirectory)) {
