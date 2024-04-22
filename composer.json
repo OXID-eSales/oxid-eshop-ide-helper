@@ -7,7 +7,7 @@
     "oxid-esales/oxideshop-facts": "*",
     "oxid-esales/oxideshop-unified-namespace-generator": "*",
     "symfony/filesystem": "^6.3",
-    "twig/twig": "^3.0"
+    "twig/twig": "3.8.0"
   },
   "require-dev": {
     "mikey179/vfsstream": "~1.6.0",
