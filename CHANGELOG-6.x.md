@@ -5,6 +5,9 @@
 ### Changed
 - Replace Smarty with Twig template engine
 
+### Removed
+- PHP v8.1 support
+
 ## v6.2.0 - 2024-03-15
 
 ### Added
