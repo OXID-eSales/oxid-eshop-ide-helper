@@ -1,6 +1,6 @@
 # Change Log for OXID eShop IDE helper
 
-## v6.3.0 - unreleased
+## v6.3.0 - 2024-10-14
 
 ### Changed
 - Replace Smarty with Twig template engine

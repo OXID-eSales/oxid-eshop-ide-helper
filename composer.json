@@ -13,8 +13,7 @@
     "mikey179/vfsstream": "~1.6.0",
     "phpunit/phpunit": "^10"
   },
-  "minimum-stability": "dev",
-  "prefer-stable": true,
+  "minimum-stability": "stable",
   "autoload": {
     "psr-4": {
       "OxidEsales\\EshopIdeHelper\\": "./src"
