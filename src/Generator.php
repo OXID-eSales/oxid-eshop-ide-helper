@@ -9,20 +9,19 @@ declare(strict_types=1);
 
 namespace OxidEsales\EshopIdeHelper;
 
-use OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider;
+use OxidEsales\EshopCommunity\Internal\Framework\FileSystem\ProjectRootLocator;
+use OxidEsales\EshopIdeHelper\Core\ModuleExtendClassMapProvider;
 use OxidEsales\UnifiedNameSpaceGenerator\BackwardsCompatibilityClassMapProvider;
 use OxidEsales\UnifiedNameSpaceGenerator\Exceptions\OutputDirectoryValidationException;
-use OxidEsales\Facts\Facts;
+use OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
-use OxidEsales\EshopIdeHelper\Core\ModuleExtendClassMapProvider;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
 class Generator
 {
     public function __construct(
-        private readonly Facts $facts,
         private readonly UnifiedNameSpaceClassMapProvider $unifiedNameSpaceClassMapProvider,
         private readonly BackwardsCompatibilityClassMapProvider $backwardsCompatibilityClassMapProvider,
         private readonly ModuleExtendClassMapProvider $moduleExtendClassMapProvider,
@@ -59,11 +58,11 @@ class Generator
             }
         }
 
-        $twig = $this->getTwig();
-        $output = $twig->render(
-            'main-template.html.twig',
-            ['backwardsCompatibleClasses' => $backwardsCompatibleClasses]
-        );
+        $output = $this->getTwig()
+            ->render(
+                'main-template.html.twig',
+                ['backwardsCompatibleClasses' => $backwardsCompatibleClasses]
+            );
         if (!is_string($output) || empty($output)) {
             throw new OutputDirectoryValidationException('Generation of the ide-helper content failed.');
         }
@@ -76,11 +75,11 @@ class Generator
      */
     protected function generatePhpStormIdeHelperOutput(): string
     {
-        $twig = $this->getTwig();
-        return $twig->render(
-            'phpstorm.meta.html.twig',
-            ['moduleParentClasses' => $this->moduleExtendClassMapProvider->getModuleParentClassMap()]
-        );
+        return $this->getTwig()
+            ->render(
+                'phpstorm.meta.html.twig',
+                ['moduleParentClasses' => $this->moduleExtendClassMapProvider->getModuleParentClassMap()]
+            );
     }
 
     private function collectInheritanceInformation(
@@ -92,9 +91,9 @@ class Generator
 
         if (array_key_exists($fullyQualifiedUnifiedNamespaceClassName, $unifiedNamespaceClassMap)) {
             $backwardsCompatibleClassMetaInformation = [
-                'isAbstract'      => $unifiedNamespaceClassMap[$fullyQualifiedUnifiedNamespaceClassName]['isAbstract'],
-                'isInterface'     => $unifiedNamespaceClassMap[$fullyQualifiedUnifiedNamespaceClassName]['isInterface'],
-                'childClassName'  => $backwardsCompatibleClassName,
+                'isAbstract' => $unifiedNamespaceClassMap[$fullyQualifiedUnifiedNamespaceClassName]['isAbstract'],
+                'isInterface' => $unifiedNamespaceClassMap[$fullyQualifiedUnifiedNamespaceClassName]['isInterface'],
+                'childClassName' => $backwardsCompatibleClassName,
                 'parentClassName' => $fullyQualifiedUnifiedNamespaceClassName
             ];
         }
@@ -131,7 +130,8 @@ class Generator
                 get_current_user() . '" ' . 'and run this script again',
                 $this->fileWriteCodeError
             );
-        } elseif (!is_writable($outputDirectory)) {
+        }
+        if (!is_writable($outputDirectory)) {
             throw new OutputDirectoryValidationException(
                 'The directory "' . realpath($outputDirectory) . '" where the class files have to be written to' .
                 ' is not writable for user "' . get_current_user() . '". ' .
@@ -144,7 +144,7 @@ class Generator
 
     private function writeIdeHelperFile($output, $fileName): void
     {
-        $outputDirectory = $this->facts->getShopRootPath();
+        $outputDirectory = (new ProjectRootLocator())->getProjectRoot();
         $this->validateOutputDirectoryPermissions($outputDirectory);
 
         $this->fileSystem->dumpFile(Path::join($outputDirectory, $fileName), $output);

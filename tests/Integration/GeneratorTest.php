@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace OxidEsales\EshopIdeHelper\tests\Integration;
 
 use OxidEsales\EshopIdeHelper\Generator;
-use OxidEsales\Facts\Facts;
 use OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider;
 use OxidEsales\UnifiedNameSpaceGenerator\BackwardsCompatibilityClassMapProvider;
 use OxidEsales\UnifiedNameSpaceGenerator\Exceptions\OutputDirectoryValidationException;
@@ -61,7 +60,6 @@ final class GeneratorTest extends TestCase
         $pathToModuleExtendClassMap = Path::join($this->getPathToTestData(), 'Valid', "ModuleExtendClassMap.php");
 
         $generator = new Generator(
-            $this->getFactsMock(0777),
             $this->getUnifiedNameSpaceClassMapProviderMock($pathToUnifiedNameSpaceClassMap),
             $this->getBackwardsCompatibilityClassMapProviderMock($pathToBackwardsCompatibilityClassMap),
             $this->getModuleExtendClassMapProviderMock($pathToModuleExtendClassMap)
@@ -92,7 +90,6 @@ final class GeneratorTest extends TestCase
         $pathToModuleExtendClassMap = Path::join($this->getPathToTestData(), 'Valid', "ModuleExtendClassMap.php");
 
         $generator = new Generator(
-            $this->getFactsMock(0555),
             $this->getUnifiedNameSpaceClassMapProviderMock($pathToUnifiedNameSpaceClassMap),
             $this->getBackwardsCompatibilityClassMapProviderMock($pathToBackwardsCompatibilityClassMap),
             $this->getModuleExtendClassMapProviderMock($pathToModuleExtendClassMap, 'never')
@@ -116,7 +113,6 @@ final class GeneratorTest extends TestCase
         $pathToModuleExtendClassMap = Path::join($this->getPathToTestData(), 'Valid', "ModuleExtendClassMap.php");
 
         $generator = new Generator(
-            $this->getFactsMock(0777),
             $this->getUnifiedNameSpaceClassMapProviderMock($pathToUnifiedNameSpaceClassMap),
             $this->getBackwardsCompatibilityClassMapProviderMock($pathToBackwardsCompatibilityClassMap),
             $this->getModuleExtendClassMapProviderMock($pathToModuleExtendClassMap)
@@ -124,17 +120,6 @@ final class GeneratorTest extends TestCase
         $generator->generate();
 
         $this->assertFileExists(Path::join($this->getVirtualOutputDirectory(), '.phpstorm.meta.php/oxid.meta.php'));
-    }
-
-    private function getFactsMock($permissionsForShopRootPath): Facts|MockObject
-    {
-        $factsMock = $this->getMockBuilder(Facts::class)
-            ->onlyMethods(['getShopRootPath'])
-            ->getMock();
-        $factsMock->expects($this->any())
-            ->method('getShopRootPath')
-            ->willReturn($this->getVirtualOutputDirectory($permissionsForShopRootPath));
-        return $factsMock;
     }
 
     private function getUnifiedNameSpaceClassMapProviderMock(
