@@ -12,38 +12,36 @@ namespace OxidEsales\EshopIdeHelper;
 use OxidEsales\EshopCommunity\Internal\Framework\FileSystem\ProjectRootLocator;
 use OxidEsales\EshopIdeHelper\Core\ModuleExtendClassMapProvider;
 use OxidEsales\UnifiedNameSpaceGenerator\BackwardsCompatibilityClassMapProvider;
-use OxidEsales\UnifiedNameSpaceGenerator\Exceptions\OutputDirectoryValidationException;
 use OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
-class Generator
+readonly class Generator
 {
     public function __construct(
-        private readonly UnifiedNameSpaceClassMapProvider $unifiedNameSpaceClassMapProvider,
-        private readonly BackwardsCompatibilityClassMapProvider $backwardsCompatibilityClassMapProvider,
-        private readonly ModuleExtendClassMapProvider $moduleExtendClassMapProvider,
-        private readonly string $templateDir = __DIR__ . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR,
-        private readonly Filesystem $fileSystem = new Filesystem(),
-        private readonly int $fileWriteCodeError = 1
+        private UnifiedNameSpaceClassMapProvider $unifiedNameSpaceClassMapProvider,
+        private BackwardsCompatibilityClassMapProvider $backwardsCompatibilityClassMapProvider,
+        private ModuleExtendClassMapProvider $moduleExtendClassMapProvider,
     ) {
     }
 
     public function generate(): void
     {
-        $output = $this->generateIdeHelperOutput();
-        $this->writeIdeHelperFile($output, '.ide-helper.php');
-
-        $outputForPhpStormIde = $this->generatePhpStormIdeHelperOutput();
-        $this->writeIdeHelperFile($outputForPhpStormIde, '.phpstorm.meta.php/oxid.meta.php');
+        $fileSystem = new Filesystem();
+        $outputDirectory = (new ProjectRootLocator())->getProjectRoot();
+        $fileSystem->dumpFile(
+            Path::join($outputDirectory, '.ide-helper.php'),
+            $this->generateIdeHelperOutput()
+        );
+        $fileSystem->dumpFile(
+            Path::join($outputDirectory, '.phpstorm.meta.php', 'oxid.meta.php'),
+            $this->generatePhpStormIdeHelperOutput()
+        );
     }
 
-    /**
-     * @deprecated method will be private in next major
-     */
-    protected function generateIdeHelperOutput(): string
+    private function generateIdeHelperOutput(): string
     {
         $backwardsCompatibleClasses = [];
         $backwardsCompatibilityMap = $this->getBackwardsCompatibilityMap();
@@ -63,17 +61,14 @@ class Generator
                 'main-template.html.twig',
                 ['backwardsCompatibleClasses' => $backwardsCompatibleClasses]
             );
-        if (!is_string($output) || empty($output)) {
-            throw new OutputDirectoryValidationException('Generation of the ide-helper content failed.');
+        if (empty($output)) {
+            throw new \RuntimeException('Generation of the ide-helper content failed.');
         }
 
         return $output;
     }
 
-    /**
-     * @deprecated method will be private in next major
-     */
-    protected function generatePhpStormIdeHelperOutput(): string
+    private function generatePhpStormIdeHelperOutput(): string
     {
         return $this->getTwig()
             ->render(
@@ -89,7 +84,7 @@ class Generator
         $backwardsCompatibleClassMetaInformation = [];
         $unifiedNamespaceClassMap = $this->getUnifiedNamespaceClassMap();
 
-        if (array_key_exists($fullyQualifiedUnifiedNamespaceClassName, $unifiedNamespaceClassMap)) {
+        if (\array_key_exists($fullyQualifiedUnifiedNamespaceClassName, $unifiedNamespaceClassMap)) {
             $backwardsCompatibleClassMetaInformation = [
                 'isAbstract' => $unifiedNamespaceClassMap[$fullyQualifiedUnifiedNamespaceClassName]['isAbstract'],
                 'isInterface' => $unifiedNamespaceClassMap[$fullyQualifiedUnifiedNamespaceClassName]['isInterface'],
@@ -112,41 +107,6 @@ class Generator
 
     protected function getTwig(): Environment
     {
-        $loader = new FilesystemLoader($this->templateDir);
-
-        return new Environment($loader);
-    }
-
-    /**
-     * @deprecated method will be removed in next major
-     */
-    protected function validateOutputDirectoryPermissions($outputDirectory): void
-    {
-        if (!is_dir($outputDirectory)) {
-            throw new OutputDirectoryValidationException(
-                'The directory "' . $outputDirectory . '" where the ide-helper file has to be written to' .
-                ' does not exist. ' .
-                'Please create the directory "' . $outputDirectory . '" with write permissions for the user "' .
-                get_current_user() . '" ' . 'and run this script again',
-                $this->fileWriteCodeError
-            );
-        }
-        if (!is_writable($outputDirectory)) {
-            throw new OutputDirectoryValidationException(
-                'The directory "' . realpath($outputDirectory) . '" where the class files have to be written to' .
-                ' is not writable for user "' . get_current_user() . '". ' .
-                'Please fix the permissions on this directory ' .
-                'and run this script again',
-                $this->fileWriteCodeError
-            );
-        }
-    }
-
-    private function writeIdeHelperFile($output, $fileName): void
-    {
-        $outputDirectory = (new ProjectRootLocator())->getProjectRoot();
-        $this->validateOutputDirectoryPermissions($outputDirectory);
-
-        $this->fileSystem->dumpFile(Path::join($outputDirectory, $fileName), $output);
+        return new Environment(new FilesystemLoader(Path::join(__DIR__, 'templates')));
     }
 }

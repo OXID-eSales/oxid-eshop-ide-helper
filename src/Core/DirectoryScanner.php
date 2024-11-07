@@ -5,68 +5,39 @@
  * See LICENSE file for license details.
  */
 
+declare(strict_types=1);
+
 namespace OxidEsales\EshopIdeHelper\Core;
 
 use Symfony\Component\Filesystem\Path;
 
-/**
- * Class DirectoryScanner: Recursively scan given path for matching files (case insensitive).
- */
 class DirectoryScanner
 {
-    /**
-     * @var array
-     */
-    private $filePaths = [];
+    private array $filePaths = [];
+    private string $searchForFileName;
 
-    /**
-     * @var string
-     */
-    private $searchForFileName = '';
-
-    /**
-     * @var string
-     */
-    private $startPath = '';
-
-    /**
-     * DirectoryScanner constructor.
-     *
-     * @param string $searchForFileName
-     * @param string $startPath
-     */
-    public function __construct($searchForFileName, $startPath)
+    public function __construct(string $searchForFileName, private readonly string $startPath)
     {
         $this->searchForFileName = strtolower($searchForFileName);
-        $this->startPath = $startPath;
     }
 
-    /**
-     * Scan shop modules directory.
-     *
-     * @return array
-     */
-    public function getFilePaths()
+    public function getFilePaths(): array
     {
         $this->scanDirectory($this->startPath);
 
         return $this->filePaths;
     }
 
-    /**
-     * Recursive search for matching files.
-     *
-     * @param string $clearFolderPath Sub-folder path to check for search file name.
-     */
-    private function scanDirectory($directoryPath)
+
+    private function scanDirectory($directoryPath): void
     {
         if (is_dir($directoryPath)) {
             $files = scandir($directoryPath);
             foreach ($files as $fileName) {
                 $filePath = Path::join($directoryPath, $fileName);
-                if (is_dir($filePath) && !in_array($fileName, ['.', '..'])) {
+                if (is_dir($filePath) && !\in_array($fileName, ['.', '..'])) {
                     $this->scanDirectory($filePath);
-                } elseif ($this->searchForFileName == strtolower($fileName)) {
+                } elseif ($this->searchForFileName === strtolower($fileName)) {
                     $this->filePaths[] = $filePath;
                 }
             }

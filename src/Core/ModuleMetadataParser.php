@@ -5,46 +5,27 @@
  * See LICENSE file for license details.
  */
 
+declare(strict_types=1);
+
 namespace OxidEsales\EshopIdeHelper\Core;
 
-/**
- * Class ModuleMetadataParser: parse module metadata.php extend section.
- */
 class ModuleMetadataParser
 {
-    /**
-     * @var DirectoryScanner
-     */
-    private $scanner;
-
-    /**
-     * ModuleMetadataParser constructor.
-     *
-     * @param DirectoryScanner $scanner
-     */
-    public function __construct(DirectoryScanner $scanner)
+    public function __construct(private readonly DirectoryScanner $scanner)
     {
-        $this->scanner = $scanner;
     }
 
-    /**
-     * Get all module chain extensions.
-     * Key is module class, value is shop class.
-     *
-     * @return array
-     */
-    public function getChainExtendedClasses()
+    public function getChainExtendedClasses(): array
     {
         $chainExtendMap = [];
-        $paths = $this->scanner->getFilePaths();
-
-        foreach ($paths as $path) {
+        foreach ($this->scanner->getFilePaths() as $path) {
             $aModule = [];
             include($path);
             if (isset($aModule['extend'])) {
                 $chainExtendMap = array_merge($chainExtendMap, array_flip($aModule['extend']));
             }
         }
+
         return $chainExtendMap;
     }
 }

@@ -5,7 +5,10 @@
  * See LICENSE file for license details.
  */
 
+declare(strict_types=1);
+
 return [
     'oxClassExistsInCommunityEdition' => 'OxidEsales\\Eshop\\ClassExistsInCommunityEdition',
-    'oxClassExistsInEnterpriseEdition' => 'OxidEsales\\Eshop\\ClassExistsInEnterpriseEdition'
+    'oxInterface'                     => 'OxidEsales\\Eshop\\OxidInterface',
+    'oxAbstractClass'                 => 'OxidEsales\\Eshop\\OxidAbstractClass'
 ];

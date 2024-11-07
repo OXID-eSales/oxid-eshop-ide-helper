@@ -1,33 +1,17 @@
 #!/usr/bin/env php
 <?php
+
 /**
  * Copyright © OXID eSales AG. All rights reserved.
  * See LICENSE file for license details.
  */
 
-$installationRootPath = dirname(
-    __FILE__,
-    4
-);
-$vendorPath = $installationRootPath . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR;
+declare(strict_types=1);
 
-require_once $vendorPath . 'autoload.php';
+use OxidEsales\EshopIdeHelper\GeneratorFactory;
 
-try {
+require_once dirname(__FILE__, 4) . DIRECTORY_SEPARATOR .  'vendor' . DIRECTORY_SEPARATOR .  'autoload.php';
 
-    $helpFactory = new \OxidEsales\EshopIdeHelper\HelpFactory();
-    $generator = $helpFactory->getGenerator();
-    $generator->generate();
-
-} catch (\Exception $exception) {
-    $message = $exception->getMessage();
-    $code = $exception->getCode();
-    $traceString = $exception->getTraceAsString();
-
-    echo $message . PHP_EOL;
-    echo "error code: $code" . PHP_EOL;
-    echo "stack trace:" . PHP_EOL;
-    echo $traceString . PHP_EOL;
-    exit(1);
-}
+(new GeneratorFactory())->create()->generate();
+echo "IDE helper files generated successfully!\n";
 exit(0);

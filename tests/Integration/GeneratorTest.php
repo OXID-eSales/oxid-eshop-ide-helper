@@ -9,199 +9,165 @@ declare(strict_types=1);
 
 namespace OxidEsales\EshopIdeHelper\tests\Integration;
 
-use OxidEsales\EshopIdeHelper\Generator;
-use OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider;
-use OxidEsales\UnifiedNameSpaceGenerator\BackwardsCompatibilityClassMapProvider;
-use OxidEsales\UnifiedNameSpaceGenerator\Exceptions\OutputDirectoryValidationException;
-use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamDirectory;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\Filesystem\Path;
+use OxidEsales\Eshop\Application\Model\Article;
+use OxidEsales\EshopCommunity\Internal\Framework\FileSystem\ProjectRootLocator;
 use OxidEsales\EshopIdeHelper\Core\ModuleExtendClassMapProvider;
+use OxidEsales\EshopIdeHelper\Generator;
+use OxidEsales\TestModule\Model\Article_parent;
+use OxidEsales\UnifiedNameSpaceGenerator\BackwardsCompatibilityClassMapProvider;
+use OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Path;
 
 final class GeneratorTest extends TestCase
 {
-    private ?vfsStreamDirectory $vfsStreamDirectory = null;
-    private string $rootDirectory = 'root';
+    private readonly string $ideHelperFile;
+    private readonly string $ideHelperFileBackup;
+    private readonly string $phpstormIdeHelperFile;
+    private readonly string $phpstormIdeHelperFileBackup;
+    private readonly Filesystem $filesystem;
+    private readonly string $fixtures;
 
-    public static function providerClassMaps(): array
+    public function setUp(): void
     {
-        return [
-            /**
-             * In the BackwardscompatiblityClassMap.php, there are listed also Enterprise classes. In case we
-             * want to generate the ide-helper for the CE edition, those classes are not found in the
-             * UnifiedNamespaceClassMap.php
-             */
-            ['NotMatchingClassMapsLikeInEnterpriseEdition'],
+        parent::setUp();
 
-            /**
-             * Matching class maps, testing abstract, interface and class
-             */
-            ['Valid']
-        ];
+        $projectRoot = (new ProjectRootLocator())->getProjectRoot();
+        $this->filesystem = new Filesystem();
+        $this->fixtures = Path::join(__DIR__, 'Fixtures');
+        $this->ideHelperFile = Path::join(
+            $projectRoot,
+            '.ide-helper.php'
+        );
+        $this->phpstormIdeHelperFile = Path::join(
+            $projectRoot,
+            '.phpstorm.meta.php',
+            'oxid.meta.php'
+        );
+        $this->ideHelperFileBackup = "$this->ideHelperFile.back";
+        $this->phpstormIdeHelperFileBackup = "$this->phpstormIdeHelperFile.back";
+
+        $this->backupHelperFiles();
     }
 
-    #[DataProvider('providerClassMaps')]
-    public function testGenerateValidCases(string $testCaseFolder): void
+    public function tearDown(): void
     {
-        $pathToUnifiedNameSpaceClassMap = Path::join(
-            $this->getPathToTestData(),
-            $testCaseFolder,
-            "UnifiedNameSpaceClassMap.php"
-        );
-        $pathToBackwardsCompatibilityClassMap = Path::join(
-            $this->getPathToTestData(),
-            $testCaseFolder,
-            "BackwardsCompatibilityClassMap.php"
-        );
-        $pathToIdeHelperOutput = Path::join($this->getPathToTestData(), $testCaseFolder, ".ide-helper.php");
-        $pathToModuleExtendClassMap = Path::join($this->getPathToTestData(), 'Valid', "ModuleExtendClassMap.php");
+        parent::tearDown();
 
-        $generator = new Generator(
-            $this->getUnifiedNameSpaceClassMapProviderMock($pathToUnifiedNameSpaceClassMap),
-            $this->getBackwardsCompatibilityClassMapProviderMock($pathToBackwardsCompatibilityClassMap),
-            $this->getModuleExtendClassMapProviderMock($pathToModuleExtendClassMap)
-        );
-        $generator->generate();
-
-        $this->assertFileEquals(
-            $pathToIdeHelperOutput,
-            Path::join(
-                $this->getVirtualOutputDirectory(),
-                '.ide-helper.php'
-            )
-        );
+        $this->restoreHelperFiles();
     }
 
-    public function testGenerateOutputFileCanNotBeWritten(): void
+    public function testGenerateWithClassMapsMissmatch(): void
     {
-        $pathToUnifiedNameSpaceClassMap = Path::join(
-            $this->getPathToTestData(),
-            'Valid',
-            "UnifiedNameSpaceClassMap.php"
-        );
-        $pathToBackwardsCompatibilityClassMap = Path::join(
-            $this->getPathToTestData(),
-            'Valid',
-            "BackwardsCompatibilityClassMap.php"
-        );
-        $pathToModuleExtendClassMap = Path::join($this->getPathToTestData(), 'Valid', "ModuleExtendClassMap.php");
+        $testCase = 'ClassMapsMissmatch';
+        (new Generator(
+            $this->getUnifiedNameSpaceClassMapProvider($testCase),
+            $this->getBackwardsCompatibilityClassMapProvider($testCase),
+            $this->getModuleExtendClassMapProvider($testCase)
+        ))
+            ->generate();
 
-        $generator = new Generator(
-            $this->getUnifiedNameSpaceClassMapProviderMock($pathToUnifiedNameSpaceClassMap),
-            $this->getBackwardsCompatibilityClassMapProviderMock($pathToBackwardsCompatibilityClassMap),
-            $this->getModuleExtendClassMapProviderMock($pathToModuleExtendClassMap, 'never')
-        );
-        $this->expectException(OutputDirectoryValidationException::class);
-        $generator->generate();
+        $this->assertFileEquals($this->getExpectedFile($testCase), $this->ideHelperFile);
+        $this->assertFileExists($this->phpstormIdeHelperFile);
     }
 
-    public function testGeneratePhpStormIdeHelper(): void
+    public function testGenerateValidCases(): void
     {
-        $pathToUnifiedNameSpaceClassMap = Path::join(
-            $this->getPathToTestData(),
-            'Valid',
-            "UnifiedNameSpaceClassMap.php"
+        $testCase = 'Valid';
+        (new Generator(
+            $this->getUnifiedNameSpaceClassMapProvider($testCase),
+            $this->getBackwardsCompatibilityClassMapProvider($testCase),
+            $this->getModuleExtendClassMapProvider($testCase)
+        ))
+            ->generate();
+
+        $this->assertFileEquals($this->getExpectedFile($testCase), $this->ideHelperFile);
+        $this->assertFileExists($this->phpstormIdeHelperFile);
+    }
+
+    public function testGenerateValidCasesWillProduceValidPhpStormHelperFile(): void
+    {
+        $testCase = 'Valid';
+        (new Generator(
+            $this->getUnifiedNameSpaceClassMapProvider($testCase),
+            $this->getBackwardsCompatibilityClassMapProvider($testCase),
+            $this->getModuleExtendClassMapProvider($testCase)
+        ))
+            ->generate();
+
+        include $this->phpstormIdeHelperFile;
+
+        $this->assertEquals(Article::class, get_parent_class(new Article_parent()));
+    }
+
+    private function getUnifiedNameSpaceClassMapProvider(string $testCase): UnifiedNameSpaceClassMapProvider
+    {
+        return $this->createConfiguredMock(
+            UnifiedNameSpaceClassMapProvider::class,
+            [
+                'getClassMap' => include Path::join(
+                    $this->fixtures,
+                    $testCase,
+                    'UnifiedNameSpaceClassMap.php'
+                ),
+            ]
         );
-        $pathToBackwardsCompatibilityClassMap = Path::join(
-            $this->getPathToTestData(),
-            'Valid',
-            "BackwardsCompatibilityClassMap.php"
+    }
+
+    private function getBackwardsCompatibilityClassMapProvider(string $testCase): BackwardsCompatibilityClassMapProvider
+    {
+        return $this->createConfiguredMock(
+            BackwardsCompatibilityClassMapProvider::class,
+            [
+                'getClassMap' => array_flip(
+                    include Path::join(
+                        $this->fixtures,
+                        $testCase,
+                        'BackwardsCompatibilityClassMap.php'
+                    )
+                ),
+            ]
         );
-        $pathToModuleExtendClassMap = Path::join($this->getPathToTestData(), 'Valid', "ModuleExtendClassMap.php");
+    }
 
-        $generator = new Generator(
-            $this->getUnifiedNameSpaceClassMapProviderMock($pathToUnifiedNameSpaceClassMap),
-            $this->getBackwardsCompatibilityClassMapProviderMock($pathToBackwardsCompatibilityClassMap),
-            $this->getModuleExtendClassMapProviderMock($pathToModuleExtendClassMap)
+    private function getModuleExtendClassMapProvider(string $testCase): ModuleExtendClassMapProvider
+    {
+        return $this->createConfiguredMock(
+            ModuleExtendClassMapProvider::class,
+            [
+                'getModuleParentClassMap' =>
+                    include Path::join(
+                        $this->fixtures,
+                        $testCase,
+                        'ModuleExtendClassMap.php'
+                    ),
+            ]
         );
-        $generator->generate();
-
-        $this->assertFileExists(Path::join($this->getVirtualOutputDirectory(), '.phpstorm.meta.php/oxid.meta.php'));
     }
 
-    private function getUnifiedNameSpaceClassMapProviderMock(
-        string $pathToUnifiedNameSpaceClassMap
-    ): UnifiedNameSpaceClassMapProvider|MockObject {
-        $unifiedNamespaceClassMap = include $pathToUnifiedNameSpaceClassMap;
-
-        $unifiedNameSpaceClassMapProviderMock = $this->getMockBuilder(UnifiedNameSpaceClassMapProvider::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getClassMap'])
-            ->getMock();
-        $unifiedNameSpaceClassMapProviderMock->expects($this->any())
-            ->method('getClassMap')
-            ->willReturn($unifiedNamespaceClassMap);
-
-        return $unifiedNameSpaceClassMapProviderMock;
-    }
-
-    private function getBackwardsCompatibilityClassMapProviderMock(
-        string $pathToBackwardsCompatibilityClassMap
-    ): MockObject|BackwardsCompatibilityClassMapProvider {
-        $backwardsCompatibilityClassMap = include $pathToBackwardsCompatibilityClassMap;
-
-        $backwardsCompatibilityClassMapProviderMock = $this->getMockBuilder(
-            BackwardsCompatibilityClassMapProvider::class
-        )
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getClassMap'])
-            ->getMock();
-        $backwardsCompatibilityClassMapProviderMock->expects($this->once())
-            ->method('getClassMap')
-            ->willReturn(array_flip($backwardsCompatibilityClassMap));
-
-        return $backwardsCompatibilityClassMapProviderMock;
-    }
-
-    private function getModuleExtendClassMapProviderMock(
-        string $pathToModuleExtendClassMap,
-        string $expectationMethod = 'once'
-    ): ModuleExtendClassMapProvider|MockObject {
-        $moduleExtendClassMap = include $pathToModuleExtendClassMap;
-
-        $moduleExtendClassMapProviderMock = $this->getMockBuilder(ModuleExtendClassMapProvider::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getModuleParentClassMap'])
-            ->getMock();
-        $moduleExtendClassMapProviderMock->expects($this->$expectationMethod())
-            ->method('getModuleParentClassMap')
-            ->willReturn($moduleExtendClassMap);
-
-        return $moduleExtendClassMapProviderMock;
-    }
-
-    private function getPathToTestData(): string
+    private function getExpectedFile(string $testCase): string
     {
-        return __DIR__ . DIRECTORY_SEPARATOR . 'testData' . DIRECTORY_SEPARATOR;
+        return Path::join(
+            $this->fixtures,
+            $testCase,
+            '.ide-helper.php'
+        );
     }
 
-    private function getVirtualOutputDirectory(int $permissions = 0777, array $structure = null): string
+    private function backupHelperFiles(): void
     {
-        if (!is_array($structure)) {
-            $structure = [];
-        }
-
-        vfsStream::create($structure, $this->getVfsStreamDirectory());
-        $directory = $this->getVfsRootPath();
-        chmod($directory, $permissions);
-
-        return $directory;
+        $this->filesystem->copy($this->ideHelperFile, $this->ideHelperFileBackup, true);
+        $this->filesystem->copy($this->phpstormIdeHelperFile, $this->phpstormIdeHelperFileBackup, true);
+        $this->filesystem->remove($this->ideHelperFile);
+        $this->filesystem->remove($this->phpstormIdeHelperFile);
     }
 
-    private function getVfsStreamDirectory(): vfsStreamDirectory
+    private function restoreHelperFiles(): void
     {
-        if (is_null($this->vfsStreamDirectory)) {
-            $this->vfsStreamDirectory = vfsStream::setup($this->rootDirectory);
-        }
-
-        return $this->vfsStreamDirectory;
-    }
-
-    private function getVfsRootPath(): string
-    {
-        return vfsStream::url($this->rootDirectory) . DIRECTORY_SEPARATOR;
+        $this->filesystem->copy($this->ideHelperFileBackup, $this->ideHelperFile, true);
+        $this->filesystem->copy($this->phpstormIdeHelperFileBackup, $this->phpstormIdeHelperFile, true);
+        $this->filesystem->remove($this->ideHelperFileBackup);
+        $this->filesystem->remove($this->phpstormIdeHelperFileBackup);
     }
 }

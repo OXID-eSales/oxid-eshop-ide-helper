@@ -5,36 +5,20 @@
  * See LICENSE file for license details.
  */
 
+declare(strict_types=1);
+
 namespace OxidEsales\EshopIdeHelper\Core;
 
-/**
- * Class ModuleExtendClassMap: maps virtual module parent classes to releated shop class.
- */
 class ModuleExtendClassMapProvider
 {
-    /**
-     * @var ModuleMetadataParser
-     */
-    private $parser;
-
-    /**
-     * ModuleExtendClassMap constructor.
-     *
-     * @param ModuleMetadataParser $parser
-     */
-    public function __construct(ModuleMetadataParser $parser)
+    public function __construct(private readonly ModuleMetadataParser $parser)
     {
-        $this->parser = $parser;
     }
 
-    /**
-     * @return array
-     */
-    public function getModuleParentClassMap()
+    public function getModuleParentClassMap(): array
     {
         $map = [];
-        $extends = $this->parser->getChainExtendedClasses();
-        foreach ($extends as $key => $value) {
+        foreach ($this->parser->getChainExtendedClasses() as $key => $value) {
             $tmp = explode("\\", $key);
             $map[] = [
                 'isAbstract'      => false,
