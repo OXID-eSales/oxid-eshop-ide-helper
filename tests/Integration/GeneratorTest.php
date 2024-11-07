@@ -16,6 +16,7 @@ use OxidEsales\UnifiedNameSpaceGenerator\BackwardsCompatibilityClassMapProvider;
 use OxidEsales\UnifiedNameSpaceGenerator\Exceptions\OutputDirectoryValidationException;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Path;
@@ -43,9 +44,7 @@ final class GeneratorTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider providerClassMaps
-     */
+    #[DataProvider('providerClassMaps')]
     public function testGenerateValidCases(string $testCaseFolder): void
     {
         $pathToUnifiedNameSpaceClassMap = Path::join(
