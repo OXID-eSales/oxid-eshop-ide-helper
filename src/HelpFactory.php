@@ -18,7 +18,7 @@ use OxidEsales\UnifiedNameSpaceGenerator\UnifiedNameSpaceClassMapProvider;
 use OxidEsales\UnifiedNameSpaceGenerator\BackwardsCompatibilityClassMapProvider;
 
 /**
- * Class HelpFactory: assemble all needed objects
+ * @deprecated class will be removed in next major
  */
 class HelpFactory
 {

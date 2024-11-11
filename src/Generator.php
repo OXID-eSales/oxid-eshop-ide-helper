@@ -41,6 +41,9 @@ class Generator
         $this->writeIdeHelperFile($outputForPhpStormIde, '.phpstorm.meta.php/oxid.meta.php');
     }
 
+    /**
+     * @deprecated method will be private in next major
+     */
     protected function generateIdeHelperOutput(): string
     {
         $backwardsCompatibleClasses = [];
@@ -68,6 +71,9 @@ class Generator
         return $output;
     }
 
+    /**
+     * @deprecated method will be private in next major
+     */
     protected function generatePhpStormIdeHelperOutput(): string
     {
         $twig = $this->getTwig();
@@ -112,6 +118,9 @@ class Generator
         return new Environment($loader);
     }
 
+    /**
+     * @deprecated method will be removed in next major
+     */
     protected function validateOutputDirectoryPermissions($outputDirectory): void
     {
         if (!is_dir($outputDirectory)) {
