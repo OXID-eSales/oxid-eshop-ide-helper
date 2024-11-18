@@ -8,6 +8,9 @@
 ### Removed
 - PHPUnit v10 support
 
+### Deprecated
+- `HelpFactory` and protected methods in `Generator`
+
 ## v6.3.0 - 2024-10-14
 
 ### Changed
