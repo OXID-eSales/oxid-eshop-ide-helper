@@ -1,12 +1,14 @@
 # Change Log for OXID eShop IDE helper
 
-## v6.4.0 - Unreleased
+## v7.0.0 - Unreleased
 
 ### Added
 - PHPUnit v11 support
+- Removed scanning directories prefixed with a `.` suche as `.git`
 
 ### Removed
 - PHPUnit v10 support
+- Removed PHP 8 support in v6.2 should have triggered a MAJOR version change
 
 ### Deprecated
 - `HelpFactory` and protected methods in `Generator`
@@ -42,3 +44,4 @@
 
 ### Removed
 - PHP v7 support
+

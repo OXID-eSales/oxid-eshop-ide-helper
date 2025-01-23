@@ -1,0 +1,22 @@
+{
+    "name": "oxid-esales/oxideshop-facts",
+    "description": "OXID eShop facts",
+    "license": "proprietary",
+    "require": {
+        "symfony/filesystem": "*"
+    },
+    "require-dev": {
+        "mikey179/vfsstream": "^1.6",
+        "phpunit/phpunit": "^10"
+    },
+    "autoload": {
+        "psr-4": {
+            "OxidEsales\\Facts\\": "./src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OxidEsales\\Facts\\Tests\\": "tests/"
+        }
+    }
+}

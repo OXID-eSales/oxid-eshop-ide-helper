@@ -60,7 +60,7 @@ class DirectoryScanner
      */
     private function scanDirectory($directoryPath)
     {
-        if (is_dir($directoryPath)) {
+        if (is_dir($directoryPath) && !str_starts_with(basename($directoryPath), '.')) {
             $files = scandir($directoryPath);
             foreach ($files as $fileName) {
                 $filePath = Path::join($directoryPath, $fileName);
