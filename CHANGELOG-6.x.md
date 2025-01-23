@@ -4,7 +4,7 @@
 
 ### Added
 - PHPUnit v11 support
-- Removed scanning directories prefixed with a `.` suche as `.git`
+- Removed scanning directories prefixed with a `.` such as `.git`
 
 ### Removed
 - PHPUnit v10 support
