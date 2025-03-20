@@ -5,6 +5,9 @@
 ### Added
 - PHPUnit v11 support
 
+### Changed
+- Updated `DirectoryScanner` to **skip hidden directories and files** (e.g., `.git`, `.cache`, `.env`).
+
 ### Removed
 - PHPUnit v10 support
 
@@ -42,3 +45,4 @@
 
 ### Removed
 - PHP v7 support
+

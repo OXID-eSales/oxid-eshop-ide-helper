@@ -1,3 +1,5 @@
 # IDE
 /.idea/
 /.phpstorm-oxid.meta.php
+vendor/
+composer.lock

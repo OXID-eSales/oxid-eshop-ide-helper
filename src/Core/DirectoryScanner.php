@@ -63,8 +63,14 @@ class DirectoryScanner
         if (is_dir($directoryPath)) {
             $files = scandir($directoryPath);
             foreach ($files as $fileName) {
+
+				if(str_starts_with(basename($fileName), '.'))
+				{
+					continue;
+				}
+
                 $filePath = Path::join($directoryPath, $fileName);
-                if (is_dir($filePath) && !in_array($fileName, ['.', '..'])) {
+                if (is_dir($filePath)) {
                     $this->scanDirectory($filePath);
                 } elseif ($this->searchForFileName == strtolower($fileName)) {
                     $this->filePaths[] = $filePath;
