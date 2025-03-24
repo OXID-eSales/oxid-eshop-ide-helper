@@ -16,14 +16,15 @@ use PHPUnit\Framework\TestCase;
 
 final class DirectoryScannerTest extends TestCase
 {
-	private vfsStreamDirectory $root;
-	private string $rootPath;
+    private vfsStreamDirectory $root;
+    private string $rootPath;
 
-	protected function setUp(): void
-	{
-		$this->root = vfsStream::setup();
-		$this->rootPath = $this->root->url();
-	}
+    protected function setUp(): void
+    {
+        $this->root = vfsStream::setup();
+        $this->rootPath = $this->root->url();
+    }
+
     /**
      * Test case that provided directory does not exist.
      */
@@ -45,32 +46,32 @@ final class DirectoryScannerTest extends TestCase
     /**
      * Test success case.
      */
-	public function testScanForFilesSuccess(): void
-	{
-		$fileName = uniqid();
-		vfsStream::newFile($fileName)->at($this->root);
+    public function testScanForFilesSuccess(): void
+    {
+        $fileName = uniqid();
+        vfsStream::newFile($fileName)->at($this->root);
 
-		$scanner = new DirectoryScanner($fileName, $this->rootPath);
-		$this->assertCount(1, $scanner->getFilePaths());
-	}
+        $scanner = new DirectoryScanner($fileName, $this->rootPath);
+        $this->assertCount(1, $scanner->getFilePaths());
+    }
 
-	public function testHiddenDirectoriesAreSkipped(): void
-	{
-		$fileName = uniqid();
-		$hiddenDir = vfsStream::newDirectory('.' . uniqid())->at($this->root);
+    public function testHiddenDirectoriesAreSkipped(): void
+    {
+        $fileName = uniqid();
+        $hiddenDir = vfsStream::newDirectory('.' . uniqid())->at($this->root);
 
-		vfsStream::newFile($fileName)->at($hiddenDir);
+        vfsStream::newFile($fileName)->at($hiddenDir);
 
-		$scanner = new DirectoryScanner($fileName, $this->rootPath);
-		$this->assertEmpty($scanner->getFilePaths());
-	}
+        $scanner = new DirectoryScanner($fileName, $this->rootPath);
+        $this->assertEmpty($scanner->getFilePaths());
+    }
 
-	public function testHiddenFilesAreSkipped(): void
-	{
-		$HiddenFileName = '.' . uniqid();
-		vfsStream::newFile($HiddenFileName)->at($this->root);
+    public function testHiddenFilesAreSkipped(): void
+    {
+        $HiddenFileName = '.' . uniqid();
+        vfsStream::newFile($HiddenFileName)->at($this->root);
 
-		$scanner = new DirectoryScanner($HiddenFileName, $this->rootPath);
-		$this->assertEmpty($scanner->getFilePaths());
-	}
+        $scanner = new DirectoryScanner($HiddenFileName, $this->rootPath);
+        $this->assertEmpty($scanner->getFilePaths());
+    }
 }
