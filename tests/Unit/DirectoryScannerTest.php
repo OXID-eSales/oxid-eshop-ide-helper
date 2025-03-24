@@ -16,8 +16,8 @@ use PHPUnit\Framework\TestCase;
 
 final class DirectoryScannerTest extends TestCase
 {
-    private vfsStreamDirectory $root;
-    private string $rootPath;
+    protected vfsStreamDirectory $root;
+    protected string $rootPath;
 
     protected function setUp(): void
     {
