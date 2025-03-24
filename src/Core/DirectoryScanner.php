@@ -35,10 +35,9 @@ class DirectoryScanner
             $files = scandir($directoryPath);
             foreach ($files as $fileName) {
 
-				if(str_starts_with(basename($fileName), '.'))
-				{
-					continue;
-				}
+                if (str_starts_with(basename($fileName), '.')) {
+                    continue;
+                }
 
                 $filePath = Path::join($directoryPath, $fileName);
                 if (is_dir($filePath)) {
