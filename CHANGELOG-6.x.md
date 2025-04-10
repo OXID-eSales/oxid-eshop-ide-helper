@@ -1,6 +1,6 @@
 # Change Log for OXID eShop IDE helper
 
-## v6.4.0 - Unreleased
+## v6.4.0 - 2025-04-10
 
 ### Added
 - PHPUnit v11 support
