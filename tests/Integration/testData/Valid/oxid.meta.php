@@ -1,4 +1,4 @@
-{{ '<?php' }}
+<?php
 
 /**
  * Used by PhpStorm to map factory methods to classes for code completion, source code analysis, etc.
@@ -13,6 +13,13 @@ namespace PHPSTORM_META {
 }
 
 // Simulating the iteration in PHP for moduleParentClasses
-{% for class in moduleParentClasses %}
-{% include 'moduleparent-class-template.html.twig' %}
-{% endfor %}
+
+namespace OxidEsales\TestModule\Model {
+    class User_parent extends \OxidEsales\Eshop\Application\Model\User
+    {}
+}
+
+namespace OxidEsales\TestModule\Model {
+    class Article_parent extends \OxidEsales\Eshop\Application\Model\Article
+    {}
+}

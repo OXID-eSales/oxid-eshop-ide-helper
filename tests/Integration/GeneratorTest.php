@@ -123,7 +123,12 @@ final class GeneratorTest extends TestCase
         );
         $generator->generate();
 
-        $this->assertFileExists(Path::join($this->getVirtualOutputDirectory(), '.phpstorm.meta.php/oxid.meta.php'));
+        $pathToOxidPhpStormMetaPhpOutput = Path::join($this->getVirtualOutputDirectory(), '.phpstorm.meta.php/oxid.meta.php');
+        $this->assertFileExists($pathToOxidPhpStormMetaPhpOutput);
+        $this->assertFileEquals(
+            Path::join($this->getPathToTestData(), 'Valid', 'oxid.meta.php'),
+            $pathToOxidPhpStormMetaPhpOutput
+        );
     }
 
     private function getFactsMock($permissionsForShopRootPath): Facts|MockObject
