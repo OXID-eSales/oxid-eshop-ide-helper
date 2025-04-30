@@ -23,7 +23,6 @@ use OxidEsales\UnifiedNameSpaceGenerator\BackwardsCompatibilityClassMapProvider;
 class HelpFactory
 {
     private string $scanForFilename = 'metadata.php';
-    private string $scanForDirectory = 'modules';
     private ?Facts $facts = null;
     private ?UnifiedNameSpaceClassMapProvider $unifiedNameSpaceClassMapProvider = null;
     private ?BackwardsCompatibilityClassMapProvider $backwardsCompatibilityClassMapProvider = null;
@@ -61,8 +60,7 @@ class HelpFactory
     public function getModuleExtendClassMapProvider(): ModuleExtendClassMapProvider
     {
         if (!is_a($this->moduleExtendClassMapProvider, ModuleExtendClassMapProvider::class)) {
-            $modulesDirectory = Path::join($this->facts->getSourcePath(), $this->scanForDirectory);
-            $scanner = new DirectoryScanner($this->scanForFilename, $modulesDirectory);
+            $scanner = new DirectoryScanner($this->scanForFilename, $this->facts->getShopRootPath());
             $parser = new ModuleMetadataParser($scanner);
             $this->moduleExtendClassMapProvider =  new ModuleExtendClassMapProvider($parser);
         }
