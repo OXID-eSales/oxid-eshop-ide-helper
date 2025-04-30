@@ -1,5 +1,13 @@
 # Change Log for OXID eShop IDE helper
 
+## v6.5.0 - Unreleased
+
+### Changed
+- Scan whole shop root directory for modules but not only "source/modules" directory.
+
+### Fixed
+- Wrong format of oxid.meta.php file generated because of broken smarty to twig translation [PR-4](https://github.com/OXID-eSales/oxid-eshop-ide-helper/pull/4)
+
 ## v6.4.0 - 2025-04-10
 
 ### Added
@@ -7,16 +15,12 @@
 
 ### Changed
 - Updated `DirectoryScanner` to **skip hidden directories and files** (e.g., `.git`, `.cache`, `.env`).
-- Scan whole shop root directory for modules but not only "source/modules" directory.
 
 ### Removed
 - PHPUnit v10 support
 
 ### Deprecated
 - `HelpFactory` and protected methods in `Generator`
-
-### Fixed
-- Wrong format of oxid.meta.php file generated because of broken smarty to twig translation [PR-4](https://github.com/OXID-eSales/oxid-eshop-ide-helper/pull/4)
 
 ## v6.3.0 - 2024-10-14
 
