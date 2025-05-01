@@ -1,9 +1,6 @@
 # Change Log for OXID eShop IDE helper
 
-## v6.5.0 - Unreleased
-
-### Changed
-- Scan whole shop root directory for modules but not only "source/modules" directory.
+## v6.4.1 - Unreleased
 
 ### Fixed
 - Wrong format of oxid.meta.php file generated because of broken smarty to twig translation [PR-4](https://github.com/OXID-eSales/oxid-eshop-ide-helper/pull/4)
