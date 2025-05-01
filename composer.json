@@ -6,6 +6,11 @@
     "oxid-esales/oxideshop-unified-namespace-generator": "*",
     "twig/twig": "^3.14"
   },
+  "require-dev": {
+    "mikey179/vfsstream": "~1.6.0",
+    "symfony/filesystem": "^6.3",
+    "phpunit/phpunit": "^10"
+  },
   "minimum-stability": "dev",
   "prefer-stable": true,
   "autoload": {
