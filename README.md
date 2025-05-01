@@ -53,6 +53,17 @@ Virtual module parent classes (*_parent) are clickable but the class chain is no
 This affects the case that multiple modules chain extend the same shop class.
 Virtual parent classes for not namescpaed modules are not clickable. 
 
+Development
+-----------
+
+To run the tests, install the dev dependencies in the module root directory and run it from there:
+
+```
+cd vendor/oxid-esales/oxideshop-ide-helper
+composer install
+vendor/bin/phpunit tests --bootstrap=/var/www/source/bootstrap.php
+```
+
 Note for PhpStorm users
 -----------------------
 

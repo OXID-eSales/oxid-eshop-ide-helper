@@ -10,3 +10,4 @@
 - Deprecated class `HelpFactory`
 - Throwing custom Exceptions when validating permission for output directory
 - Dependency on the `Facts` component
+- Dependency on not used `oxid-esales/oxideshop-unified-namespace-generator` component

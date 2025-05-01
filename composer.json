@@ -3,7 +3,6 @@
   "description": "OXID eShop IDE helper for code completion",
   "license": "proprietary",
   "require": {
-    "oxid-esales/oxideshop-unified-namespace-generator": "*",
     "twig/twig": "^3.14"
   },
   "require-dev": {
