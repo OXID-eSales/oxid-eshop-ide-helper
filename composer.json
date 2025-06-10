@@ -17,6 +17,11 @@
       "OxidEsales\\EshopIdeHelper\\": "./src"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "OxidEsales\\EshopIdeHelper\\Tests\\": "./tests"
+    }
+  },
   "bin": [
     "./oe-eshop-ide_helper"
   ]
