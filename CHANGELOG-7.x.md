@@ -1,5 +1,8 @@
 # Change Log for OXID eShop IDE helper
 
+## v8.0.0-alpha.2 - 2026-02-12
+*Compilation release*
+
 ## v7.0.0-alpha.1 - 2025-02-03
 
 ### Fixed
