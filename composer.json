@@ -6,7 +6,7 @@
         "oxid-esales/oxideshop-unified-namespace-generator": "*",
         "twig/twig": "^3.14"
     },
-    "minimum-stability": "alpha",
+    "minimum-stability": "dev",
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
