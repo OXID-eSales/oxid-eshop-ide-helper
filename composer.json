@@ -10,8 +10,7 @@
         "twig/twig": "^3.14"
     },
     "require-dev": {
-        "mikey179/vfsstream": "~1.6.0",
-        "phpunit/phpunit": "^10"
+        "mikey179/vfsstream": "~1.6.0"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
