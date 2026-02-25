@@ -27,10 +27,7 @@ final class ModuleMetadataParserTest extends TestCase
             Path::join(__DIR__, 'testData', 'example_3.php'),
         ];
 
-        $scanner = $this->getMockBuilder(DirectoryScanner::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getFilePaths'])
-            ->getMock();
+        $scanner = $this->createStub(DirectoryScanner::class);
         $scanner
             ->method('getFilePaths')
             ->willReturn($testData);
@@ -55,10 +52,7 @@ final class ModuleMetadataParserTest extends TestCase
             Path::join(__DIR__, 'testData', 'example_2.php'),
         ];
 
-        $scanner = $this->getMockBuilder(DirectoryScanner::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getFilePaths'])
-            ->getMock();
+        $scanner = $this->createStub(DirectoryScanner::class);
         $scanner
             ->method('getFilePaths')
             ->willReturn($testData);
