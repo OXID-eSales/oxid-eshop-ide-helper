@@ -103,7 +103,7 @@ final class GeneratorTest extends TestCase
 
     private function getUnifiedNameSpaceClassMapProvider(string $testCase): UnifiedNameSpaceClassMapProvider
     {
-        return $this->createConfiguredMock(
+        return $this->createConfiguredStub(
             UnifiedNameSpaceClassMapProvider::class,
             [
                 'getClassMap' => include Path::join(
@@ -117,7 +117,7 @@ final class GeneratorTest extends TestCase
 
     private function getBackwardsCompatibilityClassMapProvider(string $testCase): BackwardsCompatibilityClassMapProvider
     {
-        return $this->createConfiguredMock(
+        return $this->createConfiguredStub(
             BackwardsCompatibilityClassMapProvider::class,
             [
                 'getClassMap' => array_flip(
@@ -133,7 +133,7 @@ final class GeneratorTest extends TestCase
 
     private function getModuleExtendClassMapProvider(string $testCase): ModuleExtendClassMapProvider
     {
-        return $this->createConfiguredMock(
+        return $this->createConfiguredStub(
             ModuleExtendClassMapProvider::class,
             [
                 'getModuleParentClassMap' =>
