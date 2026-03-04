@@ -26,10 +26,7 @@ final class ModuleExtendClassMapProviderTest extends TestCase
             'nonamespace_testmodule_header'            => 'OxidEsales\Eshop\Core\Header',
         ];
 
-        $parser = $this->getMockBuilder(ModuleMetadataParser::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getChainExtendedClasses'])
-            ->getMock();
+        $parser = $this->createStub(ModuleMetadataParser::class);
         $parser
             ->method('getChainExtendedClasses')
             ->willReturn($testData);
