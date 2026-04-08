@@ -1,6 +1,6 @@
 # Change Log for OXID eShop IDE helper
 
-## v6.5.0 - unreleased
+## v6.5.0 - 2026-04-08
 
 ### Added
 - PHP v8.5 support
