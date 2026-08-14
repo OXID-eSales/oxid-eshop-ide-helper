@@ -23,7 +23,8 @@ final class GeneratorFactoryTest extends TestCase
     {
         $this->helperFile = Path::join(
             (new ProjectRootLocator())->getProjectRoot(),
-            '.ide-helper.php'
+            '.phpstorm.meta.php',
+            'oxid.meta.php'
         );
         (new Filesystem())->remove($this->helperFile);
     }

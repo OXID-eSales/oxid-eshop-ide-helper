@@ -3,6 +3,10 @@
 ## v8.0.0-alpha.3 - Unreleased
 *Compilation release*
 
+### Removed
+- Generation of `.ide-helper.php` IDE autocompletion stubs for legacy (backwards-compatible) class names
+- Dependency on `oxid-esales/oxideshop-unified-namespace-generator`
+
 ## v8.0.0-alpha.2 - 2026-02-12
 *Compilation release*
 
