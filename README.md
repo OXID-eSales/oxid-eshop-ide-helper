@@ -8,6 +8,10 @@ autocompletion for backwards compatible OXID eShop classes (e.g. class `oxArticl
 The name of the generated file is `.ide-helper.php` (note the leading dot). 
 It's located in the root directory of your OXID eShop project. 
 
+**Deprecated:** generation of `.ide-helper.php` for legacy (backwards-compatible) class
+names, and the `oxid-esales/oxideshop-unified-namespace-generator` dependency it relies
+on, are deprecated and will be removed in v8.0.
+
 Also this component generates a helper file for PhpStorm IDE so that virtual module 
 parent classes (*_parent) of namespaced modules are clickable. The name of the 
 generated file is `.phpstorm.meta.php/oxid.meta.php`. 

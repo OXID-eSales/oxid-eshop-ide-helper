@@ -23,7 +23,9 @@ class Generator
 {
     public function __construct(
         private readonly Facts $facts,
+        // deprecated, will be removed in v8.0
         private readonly UnifiedNameSpaceClassMapProvider $unifiedNameSpaceClassMapProvider,
+        // deprecated, will be removed in v8.0
         private readonly BackwardsCompatibilityClassMapProvider $backwardsCompatibilityClassMapProvider,
         private readonly ModuleExtendClassMapProvider $moduleExtendClassMapProvider,
         private readonly string $templateDir = __DIR__ . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR,
@@ -42,7 +44,7 @@ class Generator
     }
 
     /**
-     * @deprecated method will be private in next major
+     * @deprecated method will be removed in v8.0
      */
     protected function generateIdeHelperOutput(): string
     {
