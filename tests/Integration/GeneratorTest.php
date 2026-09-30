@@ -136,7 +136,7 @@ final class GeneratorTest extends TestCase
         $factsMock = $this->getMockBuilder(Facts::class)
             ->onlyMethods(['getShopRootPath'])
             ->getMock();
-        $factsMock->expects($this->any())
+        $factsMock
             ->method('getShopRootPath')
             ->willReturn($this->getVirtualOutputDirectory($permissionsForShopRootPath));
         return $factsMock;
@@ -152,7 +152,7 @@ final class GeneratorTest extends TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['getClassMap'])
             ->getMock();
-        $unifiedNameSpaceClassMapProviderMock->expects($this->any())
+        $unifiedNameSpaceClassMapProviderMock
             ->method('getClassMap')
             ->willReturn($unifiedNamespaceClassMap);
 

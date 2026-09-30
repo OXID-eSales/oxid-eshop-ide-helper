@@ -2,9 +2,16 @@
 
 ## v6.6.0 - Unreleased
 
+### Added
+- PHPUnit v13 support
+
 ### Deprecated
 - Generation of `.ide-helper.php` IDE autocompletion stubs for legacy (backwards-compatible) class names
 - Dependency on `oxid-esales/oxideshop-unified-namespace-generator`
+
+### Removed
+- PHP v8.3 support
+- PHPUnit v12 support
 
 ## v6.5.0 - 2026-04-08
 
