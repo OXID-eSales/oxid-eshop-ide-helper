@@ -1,6 +1,6 @@
 # Change Log for OXID eShop IDE helper
 
-## v6.6.0 - Unreleased
+## v6.6.0 - 2026-10-06
 
 ### Deprecated
 - Generation of `.ide-helper.php` IDE autocompletion stubs for legacy (backwards-compatible) class names
