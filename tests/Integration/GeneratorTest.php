@@ -18,6 +18,7 @@ use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Path;
 use OxidEsales\EshopIdeHelper\Core\ModuleExtendClassMapProvider;
@@ -131,11 +132,11 @@ final class GeneratorTest extends TestCase
         );
     }
 
-    private function getFactsMock($permissionsForShopRootPath): Facts|MockObject
+    private function getFactsMock($permissionsForShopRootPath): Facts|Stub
     {
-        $factsMock = $this->getMockBuilder(Facts::class)
+        $factsMock = $this->getStubBuilder(Facts::class)
             ->onlyMethods(['getShopRootPath'])
-            ->getMock();
+            ->getStub();
         $factsMock
             ->method('getShopRootPath')
             ->willReturn($this->getVirtualOutputDirectory($permissionsForShopRootPath));
@@ -144,14 +145,14 @@ final class GeneratorTest extends TestCase
 
     private function getUnifiedNameSpaceClassMapProviderMock(
         string $pathToUnifiedNameSpaceClassMap
-    ): UnifiedNameSpaceClassMapProvider|MockObject
+    ): UnifiedNameSpaceClassMapProvider|Stub
     {
         $unifiedNamespaceClassMap = include $pathToUnifiedNameSpaceClassMap;
 
-        $unifiedNameSpaceClassMapProviderMock = $this->getMockBuilder(UnifiedNameSpaceClassMapProvider::class)
+        $unifiedNameSpaceClassMapProviderMock = $this->getStubBuilder(UnifiedNameSpaceClassMapProvider::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getClassMap'])
-            ->getMock();
+            ->getStub();
         $unifiedNameSpaceClassMapProviderMock
             ->method('getClassMap')
             ->willReturn($unifiedNamespaceClassMap);
@@ -201,7 +202,7 @@ final class GeneratorTest extends TestCase
         return __DIR__ . DIRECTORY_SEPARATOR . 'testData' . DIRECTORY_SEPARATOR;
     }
 
-    private function getVirtualOutputDirectory(int $permissions = 0777, array $structure = null): string
+    private function getVirtualOutputDirectory(int $permissions = 0777, ?array $structure = null): string
     {
         if (!is_array($structure)) {
             $structure = [];
